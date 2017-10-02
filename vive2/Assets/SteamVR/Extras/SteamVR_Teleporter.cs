@@ -9,6 +9,17 @@ public class SteamVR_Teleporter : MonoBehaviour
 
     public Vector3 slpoint1;
     public Vector3 slpoint2;
+    public Vector3 targetPoint;
+
+    private enum selectingStepEnum
+    {
+        units,
+        target,
+        none
+    }
+
+    private selectingStepEnum selectingStep = selectingStepEnum.units;
+
 
     public enum TeleportType
 	{
@@ -42,7 +53,7 @@ public class SteamVR_Teleporter : MonoBehaviour
 
 		trackedController.TriggerClicked += new ClickedEventHandler(DoClick);
 
-        trackedController.TriggerUnclicked += new ClickedEventHandler(DoClick);
+        trackedController.TriggerUnclicked += new ClickedEventHandler(DoReleased);
 
 
         if (teleportType == TeleportType.TeleportTypeUseTerrain)
@@ -56,18 +67,29 @@ public class SteamVR_Teleporter : MonoBehaviour
 
     void DoReleased(object sender, ClickedEventArgs e)
     {
+        //Select units inside selection rectangle
         GameObject[] list = GameObject.FindGameObjectsWithTag("Player's Unit");
         for (int i = 0; i < list.Length; i++)
         {
-        Rect rect = new Rect(slpoint1.x, slpoint1.y, slpoint2.x, slpoint2.y);
-            if (rect.Contains(new Vector2(list[i].GetComponent<Transform>().position.x, list[i].GetComponent<Transform>().position.y)))
+        Rect rect = new Rect(slpoint1.x, slpoint1.z, slpoint2.x - slpoint1.x, slpoint2.z - slpoint1.z);
+            Debug.Log(rect);
+            if (rect.Contains(new Vector2(list[i].GetComponent<Transform>().position.x, list[i].GetComponent<Transform>().position.z), true))
+            {
                 list[i].BroadcastMessage("Select");
+                Debug.Log("SELECTED");
+            }
+            else
+            {
+                list[i].BroadcastMessage("DeSelect");
+                Debug.Log("DESELECTED" + list[i].GetComponent<Transform>().position.ToString());
+            }
         }
     }
 
 	void DoClick(object sender, ClickedEventArgs e)
 	{
-		if (teleportOnClick)
+        
+        if (teleportOnClick)
 		{
 			// First get the current Transform of the the reference space (i.e. the Play Area, e.g. CameraRig prefab)
 			var t = reference;
@@ -108,7 +130,7 @@ public class SteamVR_Teleporter : MonoBehaviour
 			if (hasGroundTarget)
 			{
 				// Get the current Camera (head) position on the ground relative to the world
-				Vector3 headPosOnGround = new Vector3(SteamVR_Render.Top().head.position.x, refY, SteamVR_Render.Top().head.position.z);
+				//Vector3 headPosOnGround = new Vector3(SteamVR_Render.Top().head.position.x, refY, SteamVR_Render.Top().head.position.z);
 
                 // We need to translate the reference space along the same vector
                 // that is between the head's position on the ground and the intersection point on the ground
@@ -121,8 +143,27 @@ public class SteamVR_Teleporter : MonoBehaviour
                 Instantiate(createObj, createPoint, Quaternion.identity); //[createObjSelected]
                 */
 
-                slpoint1 = t.position + (ray.origin + (ray.direction * dist));
-
+                if (selectingStep == selectingStepEnum.units)
+                {
+                    slpoint1 = t.position + (ray.origin + (ray.direction * dist));
+                    selectingStep = selectingStepEnum.target;
+                    Debug.Log("SelectingStep set to target");
+                }
+                else
+                if (selectingStep == selectingStepEnum.target)
+                {
+                    targetPoint = t.position + (ray.origin + (ray.direction * dist));
+                    selectingStep = selectingStepEnum.none;
+                    Debug.Log("SelectingStep set to none");
+                    GameObject[] list = GameObject.FindGameObjectsWithTag("Player's Unit");
+                    for (int i = 0; i < list.Length; i++)
+                    {
+                        list[i].BroadcastMessage("Target", targetPoint);
+                        Debug.Log("TARGETED");
+                        slpoint1 = new Vector3(0, 0, 0);
+                        slpoint2 = new Vector3(0, 0, 0);
+                    }
+                }
                 //teleport
                 //t.position = t.position + (ray.origin + (ray.direction * dist)) - headPosOnGround;
             }
@@ -170,27 +211,39 @@ public class SteamVR_Teleporter : MonoBehaviour
                 hasGroundTarget = plane.Raycast(ray, out dist);
             }
 
-            if (hasGroundTarget)
+            if (hasGroundTarget && selectingStep == selectingStepEnum.target)
             {
                 slpoint2 = t.position + (ray.origin + (ray.direction * dist));
             }
         }
-        
-        //x1 to x2 on z1
-        DrawLine(new Vector3(slpoint1.x, slpoint1.y + .1f, slpoint1.z),
+        else
+        {
+
+            if (selectingStep == selectingStepEnum.none)
+            {
+                selectingStep = selectingStepEnum.units;
+
+                Debug.Log("SelectingStep set to units");
+            }
+        }
+        if (selectingStep == selectingStepEnum.target)
+        {
+            //x1 to x2 on z1
+            DrawLine(new Vector3(slpoint1.x, slpoint1.y + .1f, slpoint1.z),
                  new Vector3(slpoint2.x, slpoint1.y + .1f, slpoint1.z), Color.blue);
 
-        //x1 to x2 on z2
-        DrawLine(new Vector3(slpoint1.x, slpoint1.y + .1f, slpoint2.z),
-                 new Vector3(slpoint2.x, slpoint1.y + .1f, slpoint2.z), Color.blue);
+            //x1 to x2 on z2
+            DrawLine(new Vector3(slpoint1.x, slpoint1.y + .1f, slpoint2.z),
+                     new Vector3(slpoint2.x, slpoint1.y + .1f, slpoint2.z), Color.blue);
 
-        //z1 to z2 on x1
-        DrawLine(new Vector3(slpoint1.x, slpoint1.y + .1f, slpoint1.z),
-                 new Vector3(slpoint1.x, slpoint1.y + .1f, slpoint2.z), Color.blue);
+            //z1 to z2 on x1
+            DrawLine(new Vector3(slpoint1.x, slpoint1.y + .1f, slpoint1.z),
+                     new Vector3(slpoint1.x, slpoint1.y + .1f, slpoint2.z), Color.blue);
 
-        //z1 to z2 on x2
-        DrawLine(new Vector3(slpoint2.x, slpoint1.y + .1f, slpoint1.z),
-                 new Vector3(slpoint2.x, slpoint1.y + .1f, slpoint2.z), Color.blue);
+            //z1 to z2 on x2
+            DrawLine(new Vector3(slpoint2.x, slpoint1.y + .1f, slpoint1.z),
+                     new Vector3(slpoint2.x, slpoint1.y + .1f, slpoint2.z), Color.blue);
+        }
     }
 
     //CREDIT FOR DRAWLINE SCRIPT GOES TO paranoidray from his answer on http://answers.unity3d.com/questions/8338/how-to-draw-a-line-using-script.html
