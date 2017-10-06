@@ -66,8 +66,8 @@ public class CameraControllerPC : MonoBehaviour {
                 //new Vector3(view_start_pos.x + (-Input.mousePosition.x - mouse_start_pos.x) / 1000, transform.position.y , view_start_pos.z + (-Input.mousePosition.y - mouse_start_pos.y) / 1000);
             transform.position = vec;
             }
-
-        transform.position += Quaternion.AngleAxis(ry, Vector3.up) * new Vector3( Input.GetAxis("Horizontal") , -Input.GetAxisRaw("Mouse ScrollWheel") * 10, Input.GetAxis("Vertical") + Input.GetAxisRaw("Mouse ScrollWheel") * 10) / 10;
+        float scale = transform.position.y / 2;
+        transform.position += Quaternion.AngleAxis(ry, Vector3.up) * new Vector3( Input.GetAxis("Horizontal") * 20 , -Input.GetAxisRaw("Mouse ScrollWheel") * 100 * scale, Input.GetAxis("Vertical") * 20 + Input.GetAxisRaw("Mouse ScrollWheel") * 100 * scale) * Time.deltaTime;
         
         //Rotate the view
         ry += Input.GetAxisRaw("Horizontal Rotation");
