@@ -16,14 +16,20 @@ public class PlayerUnitController : MonoBehaviour {
     NavMeshAgent agent;
     Rigidbody rb;
 
+    Transform model;
+
     // Use this for initialization
     void Start () {
         agent = GetComponent<NavMeshAgent>();
         agent.updateUpAxis = false;
         agent.updateRotation = false;
+        
+        model = transform.GetChild(0);
 
         rb = GetComponent<Rigidbody>();
-        anim = GetComponent<Animator>();
+        anim = model.GetComponent<Animator>();
+
+        transform.rotation = Quaternion.LookRotation(new Vector3(0, 0, 0));
     }
 
     // Update is called once per frame
@@ -33,7 +39,7 @@ public class PlayerUnitController : MonoBehaviour {
         float z = transform.position.z;
 
         if (agent.velocity.magnitude > .2f)
-        transform.rotation = Quaternion.LookRotation(agent.velocity + new Vector3(0, 90, 0));
+        transform.rotation = Quaternion.LookRotation(agent.velocity + new Vector3(0, 0, 0));
 
         Animating(agent.velocity);
 

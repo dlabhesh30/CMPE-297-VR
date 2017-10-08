@@ -33,34 +33,42 @@ public class DistancePolyOptimizeInit : MonoBehaviour {
     void UpdateModel() {
         //Do Polygon Optimization for VR Headset
         GameObject cam = GameObject.FindGameObjectWithTag("MainCamera");
-        float dist = Vector3.Distance(cam.transform.position, transform.position);
-        //If far enough away activate low poly model and deactivate high poly model
-        if (dist > maxHighPolyDistance)
+        float dist;
+        if (cam != null)
         {
-            lowPolyModelVR.gameObject.SetActive(true);
-            highPolyModelVR.gameObject.SetActive(false);
+            dist = Vector3.Distance(cam.transform.position, transform.position);
+            //If far enough away activate low poly model and deactivate high poly model
+            if (dist > maxHighPolyDistance)
+            {
+                lowPolyModelVR.gameObject.SetActive(true);
+                highPolyModelVR.gameObject.SetActive(false);
+            }
+            else
+            //If close enough activate high poly model and deactivate low poly model
+            {
+                lowPolyModelVR.gameObject.SetActive(false);
+                highPolyModelVR.gameObject.SetActive(true);
+            }
         }
-        else
-        //If close enough activate high poly model and deactivate low poly model
-        {
-            lowPolyModelVR.gameObject.SetActive(false);
-            highPolyModelVR.gameObject.SetActive(true);
-        }
-        
+
+
         //Do Polygon Optimization for PC Screen
         cam = GameObject.FindGameObjectWithTag("MainCameraPC");
-        dist = Vector3.Distance(cam.transform.position, transform.position);
-        //If far enough away activate low poly model and deactivate high poly model
-        if (dist > maxHighPolyDistance)
+        if (cam != null)
         {
-            lowPolyModelPC.gameObject.SetActive(true);
-            highPolyModelPC.gameObject.SetActive(false);
-        }
-        else
-        //If close enough activate high poly model and deactivate low poly model
-        {
-            lowPolyModelPC.gameObject.SetActive(false);
-            highPolyModelPC.gameObject.SetActive(true);
+            dist = Vector3.Distance(cam.transform.position, transform.position);
+            //If far enough away activate low poly model and deactivate high poly model
+            if (dist > maxHighPolyDistance)
+            {
+                lowPolyModelPC.gameObject.SetActive(true);
+                highPolyModelPC.gameObject.SetActive(false);
+            }
+            else
+            //If close enough activate high poly model and deactivate low poly model
+            {
+                lowPolyModelPC.gameObject.SetActive(false);
+                highPolyModelPC.gameObject.SetActive(true);
+            }
         }
     }
 }

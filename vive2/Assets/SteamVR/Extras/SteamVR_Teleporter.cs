@@ -1,10 +1,13 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System;
 
 public class SteamVR_Teleporter : MonoBehaviour
 {
     //List of objects player can create
     public Transform createObj; // = new Transform[3];
+
+    public GameObject groundPlane;
 
     //place_obj_turret and place_obj_wall are the objects floating around your hand, placeObj is the building object you have currently selected to place
     public Transform placeObj, place_obj_turret, place_obj_wall, place_obj_hut;
@@ -22,15 +25,19 @@ public class SteamVR_Teleporter : MonoBehaviour
 
     bool clicked = false;
 
+    bool swipingHorizontally = false, swipingVertically = false;
+
+    float swipeTimer = 0;
+
     float selectionTimer = 0;
 
-    float lastPx = 0;
+    float lastPx = 0, lastPy = 0;
 
     float scale = 0;
     bool padTouched = false;
 
     float buildingRotation = 0;
-    
+
     private enum selectingStepEnum
     {
         units,
@@ -39,13 +46,13 @@ public class SteamVR_Teleporter : MonoBehaviour
     }
 
     private selectingStepEnum selectingStep = selectingStepEnum.units;
-    
+
     public enum TeleportType
-	{
-		TeleportTypeUseTerrain,
-		TeleportTypeUseCollider,
-		TeleportTypeUseZeroY
-	}
+    {
+        TeleportTypeUseTerrain,
+        TeleportTypeUseCollider,
+        TeleportTypeUseZeroY
+    }
 
     public bool teleportOnClick = false;
 
@@ -53,24 +60,25 @@ public class SteamVR_Teleporter : MonoBehaviour
 
     public TeleportType teleportType = TeleportType.TeleportTypeUseZeroY;
 
-	Transform reference
-	{
-		get
-		{
-		var top = SteamVR_Render.Top();
-		return (top != null) ? top.origin : null;
-		}
-	}
+    Transform reference
+    {
+        get
+        {
+            var top = SteamVR_Render.Top();
+            return (top != null) ? top.origin : null;
+        }
+    }
 
-	void Start()
-	{
-		var trackedController = GetComponent<SteamVR_TrackedController>();
-		if (trackedController == null)
-		{
-			trackedController = gameObject.AddComponent<SteamVR_TrackedController>();
-		}
+    void Start()
+    {
+        groundPlane = GameObject.FindGameObjectWithTag("GroundPlane");
+        var trackedController = GetComponent<SteamVR_TrackedController>();
+        if (trackedController == null)
+        {
+            trackedController = gameObject.AddComponent<SteamVR_TrackedController>();
+        }
 
-		trackedController.TriggerClicked += new ClickedEventHandler(DoTriggerClick);
+        trackedController.TriggerClicked += new ClickedEventHandler(DoTriggerClick);
 
         trackedController.TriggerUnclicked += new ClickedEventHandler(DoTriggerReleased);
 
@@ -79,13 +87,13 @@ public class SteamVR_Teleporter : MonoBehaviour
         trackedController.PadUntouched += new ClickedEventHandler(DoPadReleased);
 
         if (teleportType == TeleportType.TeleportTypeUseTerrain)
-		{
-			// Start the player at the level of the terrain
-			var t = reference;
-			if (t != null)
-				t.position = new Vector3(t.position.x, Terrain.activeTerrain.SampleHeight(t.position), t.position.z);
-		}
-	}
+        {
+            // Start the player at the level of the terrain
+            var t = reference;
+            if (t != null)
+                t.position = new Vector3(t.position.x, Terrain.activeTerrain.SampleHeight(t.position), t.position.z);
+        }
+    }
 
     void DoPadTouched(object sender, ClickedEventArgs e)
     {
@@ -154,7 +162,7 @@ public class SteamVR_Teleporter : MonoBehaviour
                 createPoint = t.position + (ray.origin + (ray.direction * dist)) + new Vector3(0,0,0);
                 Instantiate(createObj, createPoint, Quaternion.identity); //[createObjSelected]
                 */
-                
+
                 //teleport
                 t.position = t.position + (ray.origin + (ray.direction * dist)) - headPosOnGround;
             }
@@ -167,7 +175,7 @@ public class SteamVR_Teleporter : MonoBehaviour
         GameObject[] list = GameObject.FindGameObjectsWithTag("Player's Unit");
         for (int i = 0; i < list.Length; i++)
         {
-        Rect rect = new Rect(slpoint1.x, slpoint1.z, slpoint2.x - slpoint1.x, slpoint2.z - slpoint1.z);
+            Rect rect = new Rect(slpoint1.x, slpoint1.z, slpoint2.x - slpoint1.x, slpoint2.z - slpoint1.z);
             if (rect.Contains(new Vector2(list[i].GetComponent<Transform>().position.x, list[i].GetComponent<Transform>().position.z), true))
             {
                 list[i].BroadcastMessage("Select");
@@ -179,50 +187,50 @@ public class SteamVR_Teleporter : MonoBehaviour
         }
     }
 
-	void DoTriggerClick(object sender, ClickedEventArgs e)
-	{
+    void DoTriggerClick(object sender, ClickedEventArgs e)
+    {
         if (teleportOnClick)
-		{
-			// First get the current Transform of the the reference space (i.e. the Play Area, e.g. CameraRig prefab)
-			var t = reference;
-			if (t == null)
-				return;
+        {
+            // First get the current Transform of the the reference space (i.e. the Play Area, e.g. CameraRig prefab)
+            var t = reference;
+            if (t == null)
+                return;
 
-			// Get the current Y position of the reference space
-			float refY = t.position.y;
+            // Get the current Y position of the reference space
+            float refY = t.position.y;
 
-			// Create a plane at the Y position of the Play Area
-			// Then create a Ray from the origin of the controller in the direction that the controller is pointing
-			Plane plane = new Plane(Vector3.up, -refY);
-			Ray ray = new Ray(this.transform.position, transform.forward);
+            // Create a plane at the Y position of the Play Area
+            // Then create a Ray from the origin of the controller in the direction that the controller is pointing
+            Plane plane = new Plane(Vector3.up, -refY);
+            Ray ray = new Ray(this.transform.position, transform.forward);
 
-			// Set defaults
-			bool hasGroundTarget = false;
-			float dist = 0f;
-			if (teleportType == TeleportType.TeleportTypeUseTerrain) // If we picked to use the terrain
-			{
-				RaycastHit hitInfo;
-				TerrainCollider tc = Terrain.activeTerrain.GetComponent<TerrainCollider>();
-				hasGroundTarget = tc.Raycast(ray, out hitInfo, 1000f);
-				dist = hitInfo.distance;
-			}
-			else if (teleportType == TeleportType.TeleportTypeUseCollider) // If we picked to use the collider
-			{
-				RaycastHit hitInfo;
-				hasGroundTarget = Physics.Raycast(ray, out hitInfo);
-				dist = hitInfo.distance;
-			}
-			else // If we're just staying flat on the current Y axis
-			{
-				// Intersect a ray with the plane that was created earlier
-				// and output the distance along the ray that it intersects
-				hasGroundTarget = plane.Raycast(ray, out dist);
-			}
+            // Set defaults
+            bool hasGroundTarget = false;
+            float dist = 0f;
+            if (teleportType == TeleportType.TeleportTypeUseTerrain) // If we picked to use the terrain
+            {
+                RaycastHit hitInfo;
+                TerrainCollider tc = Terrain.activeTerrain.GetComponent<TerrainCollider>();
+                hasGroundTarget = tc.Raycast(ray, out hitInfo, 1000f);
+                dist = hitInfo.distance;
+            }
+            else if (teleportType == TeleportType.TeleportTypeUseCollider) // If we picked to use the collider
+            {
+                RaycastHit hitInfo;
+                hasGroundTarget = Physics.Raycast(ray, out hitInfo);
+                dist = hitInfo.distance;
+            }
+            else // If we're just staying flat on the current Y axis
+            {
+                // Intersect a ray with the plane that was created earlier
+                // and output the distance along the ray that it intersects
+                hasGroundTarget = plane.Raycast(ray, out dist);
+            }
 
-			if (hasGroundTarget)
-			{
-				// Get the current Camera (head) position on the ground relative to the world
-				//Vector3 headPosOnGround = new Vector3(SteamVR_Render.Top().head.position.x, refY, SteamVR_Render.Top().head.position.z);
+            if (hasGroundTarget)
+            {
+                // Get the current Camera (head) position on the ground relative to the world
+                //Vector3 headPosOnGround = new Vector3(SteamVR_Render.Top().head.position.x, refY, SteamVR_Render.Top().head.position.z);
 
                 // We need to translate the reference space along the same vector
                 // that is between the head's position on the ground and the intersection point on the ground
@@ -247,20 +255,43 @@ public class SteamVR_Teleporter : MonoBehaviour
                     selectingStep = selectingStepEnum.none;
                     GameObject[] list = GameObject.FindGameObjectsWithTag("Player's Unit");
 
-                    float width = Mathf.Sqrt(list.Length);
-
+                    ArrayList listSelected = new ArrayList();
                     for (int i = 0; i < list.Length; i++)
+                    {
+                        if (list[i].GetComponent<PlayerUnitController>().selected)
                         {
-                        list[i].BroadcastMessage("Target", targetPoint + new Vector3((i - width / 2) * .3f , 0, 0));
-                        slpoint1 = new Vector3(0, 0, 0);
-                        slpoint2 = new Vector3(0, 0, 0);
+                            listSelected.Add(list[i]);
+                        }
+                    }
+
+                        float width = Mathf.Sqrt(listSelected.Count); // listSelected.Count; // Mathf.Sqrt(listSelected.Count);
+
+                    if (listSelected.Count == 1)
+                    {
+                        ((GameObject)listSelected[0]).BroadcastMessage("Target", targetPoint);
+                    }
+                    else
+                    {
+                        int row = 0, col = 0;
+                        for (int i = 0; i < listSelected.Count; i++)
+                        {
+                            ((GameObject)listSelected[i]).BroadcastMessage("Target", targetPoint + new Vector3((col) * .3f - width / 2 * .3f, 0, (row) * .3f - width / 2 * .3f));
+                            slpoint1 = new Vector3(0, 0, 0);
+                            slpoint2 = new Vector3(0, 0, 0);
+                            col++;
+                            if (col > width)
+                            {
+                                col = 0;
+                                row++;
+                            }
+                        }
                     }
                 }
                 //teleport
                 //t.position = t.position + (ray.origin + (ray.direction * dist)) - headPosOnGround;
             }
-		}
-	}
+        }
+    }
 
     private void Update()
     {
@@ -268,7 +299,7 @@ public class SteamVR_Teleporter : MonoBehaviour
 
         //////////////PAD SWIPING FOR TOOL SELECTION//////////////////
         SteamVR_TrackedObject trackedObj = GetComponent<SteamVR_TrackedObject>();
-        
+
         var device = SteamVR_Controller.Input((int)trackedObj.index);
 
         float px = device.GetAxis(Valve.VR.EVRButtonId.k_EButton_Axis0).x;
@@ -277,35 +308,71 @@ public class SteamVR_Teleporter : MonoBehaviour
         if (padTouched && Mathf.Abs(py) < .3)
         {
             selectionTimer = 30;
-            if (px != 0 && lastPx != 0)
-            {
-                buildingRotation -= (px - lastPx) * 120; //* (padXPrev - e.padX);
 
+            if (!swipingHorizontally && !swipingVertically)
+            {
+                if (lastPx != 0 && Math.Abs(px - lastPx) > .4)
+                    swipingHorizontally = true;
+                else
+                if (lastPy != 0 && Math.Abs(py - lastPy) > .2)
+                    swipingVertically = true;
             }
 
-            //}
+            if (swipingHorizontally && px != 0 && lastPx != 0)
+            {
+                buildingRotation -= (px - lastPx) * 120; //* (padXPrev - e.padX);
+            }
 
-            //store previous position of pad
+            if (swipingVertically && py != 0 && lastPy != 0)
+            {
+                float magnitude = transform.parent.gameObject.transform.localScale.magnitude;
+                transform.parent.gameObject.transform.localScale += new Vector3(1, 1, 1) * (py - lastPy) * magnitude;
+
+                magnitude = transform.parent.gameObject.transform.localScale.magnitude;
+
+                if (magnitude < .25)
+                    transform.parent.gameObject.transform.localScale = new Vector3(1, 1, 1) * .25f;
+
+                if (magnitude > 500)
+                    transform.parent.gameObject.transform.localScale = new Vector3(1, 1, 1) * 500;
+
+                //magnitude = transform.parent.gameObject.transform.localScale.magnitude;
+                //Debug.Log(magnitude);
+            }
+
+            if (swipingHorizontally)
             scale = (scale + 1) / 2;
+
+
         }
         else
         {
-
+           
             if (selectionTimer > 0)
                 selectionTimer -= 20 * Time.deltaTime;
             else
                 selectionTimer = 0;
+
+            if (selectionTimer < 18)
+            {
+                swipingHorizontally = false;
+                swipingVertically = false;
+            }
+
             if (selectionTimer < 10)
             {
-                scale = Mathf.Lerp(0,1, selectionTimer / 10); //(scale + 0) / 2;
-                
+                scale = Mathf.Lerp(0, 1, selectionTimer / 10); //(scale + 0) / 2;
+
             }
             buildingRotation = (Mathf.Round(buildingRotation / 90) * 90 + buildingRotation) / 2;
         }
 
         buildingSelector.localScale = new Vector3(scale, scale, scale);
         buildingSelector.eulerAngles = new Vector3(transform.eulerAngles.x, transform.eulerAngles.y, transform.eulerAngles.z + buildingRotation);
+
+        //store previous position of pad
         lastPx = px;
+        lastPy = py;
         ////////////////////////////////////
 
         // First get the current Transform of the the reference space (i.e. the Play Area, e.g. CameraRig prefab)
@@ -349,11 +416,11 @@ public class SteamVR_Teleporter : MonoBehaviour
 
             // Create a plane at the Y position of the Play Area
             // Then create a Ray from the origin of the controller in the direction that the controller is pointing
-            
+
             // Set defaults
             //bool hasGroundTarget = false;
             //float dist = 0f;
-            
+
 
             if (hasGroundTarget && selectingStep == selectingStepEnum.target)
             {
@@ -365,10 +432,10 @@ public class SteamVR_Teleporter : MonoBehaviour
             if (selectingStep == selectingStepEnum.none)
             {
                 selectingStep = selectingStepEnum.units;
-                
+
             }
         }
-        
+
         if (selectingStep == selectingStepEnum.target)
         {
             //x1 to x2 on z1
@@ -424,7 +491,7 @@ public class SteamVR_Teleporter : MonoBehaviour
         placeObj.position = (ray.origin + (ray.direction * dist));
         placeObj.eulerAngles = new Vector3(0, -transform.eulerAngles.z - cam[0].transform.eulerAngles.y, 0);
 
-        
+
         if (trackedController.triggerPressed)
         {
             if (!clicked && placing)
@@ -441,7 +508,7 @@ public class SteamVR_Teleporter : MonoBehaviour
         }
 
 
-        }
+    }
 
     //CREDIT FOR DRAWLINE SCRIPT GOES TO paranoidray from his answer on http://answers.unity3d.com/questions/8338/how-to-draw-a-line-using-script.html
     void DrawLine(Vector3 start, Vector3 end, Color color, float duration = 0.01f)

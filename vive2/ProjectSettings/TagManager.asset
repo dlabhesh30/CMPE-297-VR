@@ -5,6 +5,9 @@ TagManager:
   serializedVersion: 2
   tags:
   - Player's Unit
+  - MainCameraPC
+  - Flag
+  - GroundPlane
   layers:
   - Default
   - TransparentFX
@@ -15,7 +18,7 @@ TagManager:
   - 
   - 
   - PCOnly
-  - 
+  - VROnly
   - 
   - 
   - 

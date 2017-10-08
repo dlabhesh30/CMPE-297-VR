@@ -26,13 +26,34 @@ public class CameraControllerPC : MonoBehaviour {
         cam = childCam.GetComponent<Camera>();
         //PlayerSettings.virtualRealitySupported = false;
     }
-	
-	// Update is called once per frame
-	void Update () {
+    /*
+    void OnGUI()
+    {
+        Vector3 p = new Vector3();
+        Camera c = Camera.main;
+        Event e = Event.current;
+        Vector2 mousePos = new Vector2();
+
+        // Get the mouse position from Event.
+        // Note that the y position from Event is inverted.
+        mousePos.x = e.mousePosition.x;
+        mousePos.y = c.pixelHeight - e.mousePosition.y;
+
+        p = c.ScreenToWorldPoint(new Vector3(mousePos.x, mousePos.y, c.nearClipPlane));
+
+        GUILayout.BeginArea(new Rect(20, 20, 250, 120));
+        GUILayout.Label("Screen pixels: " + c.pixelWidth + ":" + c.pixelHeight);
+        GUILayout.Label("Mouse position: " + mousePos);
+        GUILayout.Label("World position: " + p.ToString("F3"));
+        GUILayout.EndArea();
+    }
+    */
+    // Update is called once per frame
+    void Update () {
         //rb.
 
         
-        Vector3 mouseWorldPos = cam.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, 0, Input.mousePosition.z));
+        Vector3 mouseWorldPos = cam.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, 0, Input.mousePosition.y ));
 
         float rx = transform.eulerAngles.x;
         float ry = transform.eulerAngles.y;
@@ -74,7 +95,7 @@ public class CameraControllerPC : MonoBehaviour {
 
         transform.eulerAngles = new Vector3( rx, ry, rz);
 
-
+        
         //x1 to x2 on z1
         DrawLine(new Vector3(slpoint1.x, slpoint1.y + .1f, slpoint1.z),
                  new Vector3(slpoint2.x, slpoint1.y + .1f, slpoint1.z), Color.blue);
@@ -90,6 +111,26 @@ public class CameraControllerPC : MonoBehaviour {
         //z1 to z2 on x2
         DrawLine(new Vector3(slpoint2.x, slpoint1.y + .1f, slpoint1.z),
                  new Vector3(slpoint2.x, slpoint1.y + .1f, slpoint2.z), Color.blue);
+                 
+    }
+
+    void DrawRectangle(Vector3 point1, Vector3 point2)
+    {
+        //x1 to x2 on z1
+        DrawLine(new Vector3(point1.x, point1.y + .1f, point1.z),
+                 new Vector3(point1.x, point1.y + .1f, point1.z), Color.red);
+
+        //x1 to x2 on z2
+        DrawLine(new Vector3(point1.x, point1.y + .1f, point1.z),
+                 new Vector3(point1.x, point1.y + .1f, point1.z), Color.blue);
+
+        //z1 to z2 on x1
+        DrawLine(new Vector3(point1.x, point1.y + .1f, point1.z),
+                 new Vector3(point1.x, point1.y + .1f, point2.z), Color.blue);
+
+        //z1 to z2 on x2
+        DrawLine(new Vector3(point2.x, point1.y + .1f, point1.z),
+                 new Vector3(point2.x, point1.y + .1f, point2.z), Color.blue);
     }
 
     //CREDIT FOR DRAWLINE SCRIPT GOES TO paranoidray from his answer on http://answers.unity3d.com/questions/8338/how-to-draw-a-line-using-script.html

@@ -1,31 +1,19 @@
 fileFormatVersion: 2
-guid: 622efe092d1894846bad310e8f848e76
-timeCreated: 1506244228
+guid: d2930d33d3fefb3448349290a5cf7149
+timeCreated: 1507424177
 licenseType: Free
 ModelImporter:
-  serializedVersion: 22
+  serializedVersion: 21
   fileIDToRecycleName:
-    100000: Box001
-    100002: Cylinder004
-    100004: //RootNode
-    400000: Box001
-    400002: Cylinder004
-    400004: //RootNode
-    2100000: 'Material #9'
-    2100002: 'Material #21'
-    2100004: 'Material #22'
-    2300000: Box001
-    2300002: Cylinder004
-    3300000: Box001
-    3300002: Cylinder004
-    4300000: Cylinder004
-    4300002: Box001
-  externalObjects: {}
+    100000: //RootNode
+    400000: //RootNode
+    2300000: //RootNode
+    3300000: //RootNode
+    4300000: Box001
   materials:
     importMaterials: 1
     materialName: 0
     materialSearch: 1
-    materialLocation: 1
   animations:
     legacyGenerateAnimations: 4
     bakeSimulation: 0
@@ -38,7 +26,6 @@ ModelImporter:
     animationImportWarnings: 
     animationRetargetingWarnings: 
     animationDoRetargetingWarnings: 0
-    importAnimatedCustomProperties: 0
     animationCompression: 1
     animationRotationError: 0.5
     animationPositionError: 0.5
