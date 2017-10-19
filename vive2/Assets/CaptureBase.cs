@@ -9,6 +9,14 @@ public class CaptureBase : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
         //team = 1;
+        if (tag == "VR Player's Unit")
+        {
+            team = 1;
+        }
+        if (tag == "PC Player's Unit")
+        {
+            team = 2;
+        }
 	}
 
     // Update is called once per frame

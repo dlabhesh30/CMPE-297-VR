@@ -11,6 +11,9 @@ public class FlagController : MonoBehaviour {
 
     Vector3 startScale;
 
+    float coinTimer = 1;
+
+    public Transform coinPrefab, unitPrefab;
 
     // Use this for initialization
     void Start() {
@@ -32,9 +35,20 @@ public class FlagController : MonoBehaviour {
 
     // Update is called once per frame
     void Update() {
-        if (captured == 100)
+        if (captured == capturedMax)
         {
             //Create Coins
+            coinTimer -= Time.deltaTime;
+            if (coinTimer <= 0)
+            {
+                coinTimer += 25;
+                //Instantiate(coinPrefab, transform.position + new Vector3(0, 1, 0), Quaternion.Euler(90, 0, 0));
+                Transform newobj = Instantiate(unitPrefab, transform.position + new Vector3(Random.value*2-1, 0, Random.value * 2 - 1), Quaternion.Euler(90, 0, 0));
+                newobj.BroadcastMessage("SetTeam" , team);
+
+                //Debug.Log("Coin Created");
+                Debug.Log("Unit Created");
+            }
         }
 
         healthBarOuter.transform.localScale = new Vector3(startScale.x, captured / capturedMax * startScale.y, startScale.z);
@@ -74,7 +88,6 @@ public class FlagController : MonoBehaviour {
             captured -= 1 * Time.deltaTime;
             if (captured <= 0)
             {
-                Debug.Log("team set to" + unitTeam);
                 team = unitTeam;
                 captured = 0;
                 blueFlag.gameObject.SetActive(false);

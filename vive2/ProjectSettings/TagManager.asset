@@ -8,6 +8,12 @@ TagManager:
   - MainCameraPC
   - Flag
   - GroundPlane
+  - PC Player's Unit
+  - VR Player's Unit
+  - AI Player's Unit
+  - ColorTex
+  - HealthBarFront
+  - HealthBarBack
   layers:
   - Default
   - TransparentFX

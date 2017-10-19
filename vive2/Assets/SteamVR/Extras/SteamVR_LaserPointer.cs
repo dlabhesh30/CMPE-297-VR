@@ -12,7 +12,6 @@ public struct PointerEventArgs
 
 public delegate void PointerEventHandler(object sender, PointerEventArgs e);
 
-
 public class SteamVR_LaserPointer : MonoBehaviour
 {
     public bool active = true;

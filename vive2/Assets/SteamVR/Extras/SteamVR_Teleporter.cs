@@ -15,9 +15,12 @@ public class SteamVR_Teleporter : MonoBehaviour
     //buildingSelector is the parent object of all the objects floating around your hand, so if you rotate it then those objects will rotate too
     public Transform buildingSelector;
 
+    Vector3 startBuildPoint;
     public Transform wallPrefab, turretPrefab, hutPrefab;
 
     public int createObjSelected = 0;
+
+    bool triggerHeld = false;
 
     public Vector3 slpoint1;
     public Vector3 slpoint2;
@@ -36,7 +39,7 @@ public class SteamVR_Teleporter : MonoBehaviour
     float scale = 0;
     bool padTouched = false;
 
-    float buildingRotation = 0;
+    float buildingRotation = 90;
 
     private enum selectingStepEnum
     {
@@ -77,6 +80,7 @@ public class SteamVR_Teleporter : MonoBehaviour
         {
             trackedController = gameObject.AddComponent<SteamVR_TrackedController>();
         }
+        
 
         trackedController.TriggerClicked += new ClickedEventHandler(DoTriggerClick);
 
@@ -94,6 +98,7 @@ public class SteamVR_Teleporter : MonoBehaviour
                 t.position = new Vector3(t.position.x, Terrain.activeTerrain.SampleHeight(t.position), t.position.z);
         }
     }
+
 
     void DoPadTouched(object sender, ClickedEventArgs e)
     {
@@ -168,11 +173,13 @@ public class SteamVR_Teleporter : MonoBehaviour
             }
         }
     }
-
+    
     void DoTriggerReleased(object sender, ClickedEventArgs e)
     {
+
+        //triggerHeld = false;
         //Select units inside selection rectangle
-        GameObject[] list = GameObject.FindGameObjectsWithTag("Player's Unit");
+        GameObject[] list = GameObject.FindGameObjectsWithTag("VR Player's Unit");
         for (int i = 0; i < list.Length; i++)
         {
             Rect rect = new Rect(slpoint1.x, slpoint1.z, slpoint2.x - slpoint1.x, slpoint2.z - slpoint1.z);
@@ -253,7 +260,7 @@ public class SteamVR_Teleporter : MonoBehaviour
                 {
                     targetPoint = (ray.origin + (ray.direction * dist)); //t.position + 
                     selectingStep = selectingStepEnum.none;
-                    GameObject[] list = GameObject.FindGameObjectsWithTag("Player's Unit");
+                    GameObject[] list = GameObject.FindGameObjectsWithTag("VR Player's Unit");
 
                     ArrayList listSelected = new ArrayList();
                     for (int i = 0; i < list.Length; i++)
@@ -297,7 +304,7 @@ public class SteamVR_Teleporter : MonoBehaviour
     {
         var trackedController = GetComponent<SteamVR_TrackedController>();
 
-        //////////////PAD SWIPING FOR TOOL SELECTION//////////////////
+        //////////////PAD SWIPE / SWIPING FOR TOOL SELECTION AND ZOOMING IN / OUT//////////////////
         SteamVR_TrackedObject trackedObj = GetComponent<SteamVR_TrackedObject>();
 
         var device = SteamVR_Controller.Input((int)trackedObj.index);
@@ -309,14 +316,17 @@ public class SteamVR_Teleporter : MonoBehaviour
         {
             selectionTimer = 30;
 
-            if (!swipingHorizontally && !swipingVertically)
-            {
-                if (lastPx != 0 && Math.Abs(px - lastPx) > .4)
+            //if (!swipingHorizontally && !swipingVertically)
+            //{
+            swipingHorizontally = false;
+            swipingVertically = false;
+
+            if (lastPx != 0 && Math.Abs(px - lastPx) > 2 * Time.deltaTime && Math.Abs(px - lastPx) > Math.Abs(py - lastPy))
                     swipingHorizontally = true;
-                else
-                if (lastPy != 0 && Math.Abs(py - lastPy) > .2)
-                    swipingVertically = true;
-            }
+            else
+            if (lastPy != 0 && Math.Abs(py - lastPy) > 2 * Time.deltaTime)
+                swipingVertically = true;
+            //}
 
             if (swipingHorizontally && px != 0 && lastPx != 0)
             {
@@ -438,21 +448,22 @@ public class SteamVR_Teleporter : MonoBehaviour
 
         if (selectingStep == selectingStepEnum.target)
         {
+            float height = .2f;
             //x1 to x2 on z1
-            DrawLine(new Vector3(slpoint1.x, slpoint1.y + .01f, slpoint1.z),
-                 new Vector3(slpoint2.x, slpoint1.y + .01f, slpoint1.z), Color.blue);
+            DrawLine(new Vector3(slpoint1.x, slpoint1.y + height, slpoint1.z),
+                 new Vector3(slpoint2.x, slpoint1.y + height, slpoint1.z), Color.blue);
 
             //x1 to x2 on z2
-            DrawLine(new Vector3(slpoint1.x, slpoint1.y + .01f, slpoint2.z),
-                     new Vector3(slpoint2.x, slpoint1.y + .01f, slpoint2.z), Color.blue);
+            DrawLine(new Vector3(slpoint1.x, slpoint1.y + height, slpoint2.z),
+                     new Vector3(slpoint2.x, slpoint1.y + height, slpoint2.z), Color.blue);
 
             //z1 to z2 on x1
-            DrawLine(new Vector3(slpoint1.x, slpoint1.y + .01f, slpoint1.z),
-                     new Vector3(slpoint1.x, slpoint1.y + .01f, slpoint2.z), Color.blue);
+            DrawLine(new Vector3(slpoint1.x, slpoint1.y + height, slpoint1.z),
+                     new Vector3(slpoint1.x, slpoint1.y + height, slpoint2.z), Color.blue);
 
             //z1 to z2 on x2
-            DrawLine(new Vector3(slpoint2.x, slpoint1.y + .01f, slpoint1.z),
-                     new Vector3(slpoint2.x, slpoint1.y + .01f, slpoint2.z), Color.blue);
+            DrawLine(new Vector3(slpoint2.x, slpoint1.y + height, slpoint1.z),
+                     new Vector3(slpoint2.x, slpoint1.y + height, slpoint2.z), Color.blue);
         }
 
 
@@ -465,41 +476,120 @@ public class SteamVR_Teleporter : MonoBehaviour
         if (buildingRotation < 0)
             buildingRotation += 360;
 
-        if (Mathf.Round(buildingRotation) == 0)
+        GameObject[] models;
+        //models = createObj.GetComponentsInChildren<GameObject>();
+        Transform wallTransform, turretTransform, tepeeTransform;
+        wallTransform = createObj.GetChild(0); // models[0].transform;
+        turretTransform = createObj.GetChild(1); //.transform;
+        tepeeTransform = createObj.GetChild(2); //.transform;
+
+        if (Mathf.Round(buildingRotation/90)*90 == 0 || Mathf.Round(buildingRotation / 90) * 90 == 360)
         {
-            placeObj = place_obj_turret;
+            placeObj = turretTransform;
             placePrefab = turretPrefab;
+            wallTransform.gameObject.SetActive(false);
+            turretTransform.gameObject.SetActive(true);
+            tepeeTransform.gameObject.SetActive(false);
             placing = true;
         }
-
-        if (Mathf.Round(buildingRotation) == 270)
+        else
+        if (Mathf.Round(buildingRotation / 90) * 90 == 270)
         {
-            placeObj = place_obj_wall;
+            placeObj = wallTransform;
             placePrefab = wallPrefab;
+            wallTransform.gameObject.SetActive(true);
+            turretTransform.gameObject.SetActive(false);
+            tepeeTransform.gameObject.SetActive(false);
             placing = true;
         }
-
-        if (Mathf.Round(buildingRotation) == 180)
+        else
+        if (Mathf.Round(buildingRotation / 90) * 90 == 180)
         {
-            placeObj = place_obj_hut;
+            placeObj = tepeeTransform;
             placePrefab = hutPrefab;
+            wallTransform.gameObject.SetActive(false);
+            turretTransform.gameObject.SetActive(false);
+            tepeeTransform.gameObject.SetActive(true);
             placing = true;
+        }
+        else
+        {
+            wallTransform.gameObject.SetActive(false);
+            turretTransform.gameObject.SetActive(false);
+            tepeeTransform.gameObject.SetActive(false);
         }
 
         GameObject[] cam = GameObject.FindGameObjectsWithTag("MainCamera");
 
-        placeObj.position = (ray.origin + (ray.direction * dist));
-        placeObj.eulerAngles = new Vector3(0, -transform.eulerAngles.z - cam[0].transform.eulerAngles.y, 0);
+        if (placeObj != null)
+        {
+            placeObj.position = (ray.origin + (ray.direction * dist));
+            placeObj.eulerAngles = new Vector3(0, -transform.eulerAngles.z, 0); // - cam[0].transform.eulerAngles.y
 
-
+            if (placeObj.position.magnitude == 0)
+            {
+                wallTransform.gameObject.SetActive(false);
+                turretTransform.gameObject.SetActive(false);
+                tepeeTransform.gameObject.SetActive(false);
+            }
+        }
+        
         if (trackedController.triggerPressed)
         {
+           // startBuildPoint = placeObj.position;
+            triggerHeld = true;
+        }
+
+        //Create Buildings, Place Buildings
+        if (trackedController.triggerPressed || triggerHeld)
+        {
+            if (!trackedController.triggerPressed)
+                triggerHeld = false;
             if (!clicked && placing)
             {
+                startBuildPoint = placeObj.position;
                 clicked = true;
-                //Debug.Log("Instantiated");
-                Transform newobj = Instantiate(placePrefab, placeObj.position, new Quaternion(0, 0, 0, 0));
-                newobj.eulerAngles = new Vector3(0, transform.eulerAngles.z, 0);
+            }
+            /*
+            Transform newobj = Instantiate(placePrefab, placeObj.position, new Quaternion(0, 0, 0, 0));
+            newobj.eulerAngles = new Vector3(0, -transform.eulerAngles.z, 0);
+            */
+            float dis = Vector3.Distance(startBuildPoint, placeObj.position);
+            if (dis > .5f)
+            {
+                //Debug.Log("HERE");
+                float xdis = placeObj.position.x - startBuildPoint.x;
+                float zdis = placeObj.position.z - startBuildPoint.z;
+                int increments = (int)(dis / .4f);
+
+                //Debug.Log("INCREMENTS: " + increments);
+                float xpos = startBuildPoint.x;
+                float zpos = startBuildPoint.z;
+
+                float dir = -Mathf.Atan2(placeObj.position.z - startBuildPoint.z, placeObj.position.x - startBuildPoint.x) * 180 / Mathf.PI;
+                //Angle(new Vector2(startBuildPoint.x, startBuildPoint.z) , new Vector2(placeObj.position.x, placeObj.position.z));
+
+                for (int i = 0; i <= increments; i++)
+                {
+                    Transform newobj = Instantiate(placeObj, new Vector3(xpos, 0, zpos), new Quaternion(0, 0, 0, 0)); // startBuildPoint.y
+                    newobj.eulerAngles = new Vector3(0, dir, 0);
+                    if (trackedController.triggerPressed)
+                    {
+                        GameObject.Destroy(newobj.gameObject, .02f);
+                    }
+                    xpos += Mathf.Cos(-Mathf.Deg2Rad * dir) * (dis / increments); // xdis / increments;
+                    zpos += Mathf.Sin(-Mathf.Deg2Rad * dir) * (dis / increments);  //zdis / increments;
+                }
+            }
+            else
+            {
+                //Debug.Log("HERE2");
+                Transform newobj = Instantiate(placeObj, new Vector3(startBuildPoint.x, 0, startBuildPoint.z), new Quaternion(0, 0, 0, 0));
+                newobj.eulerAngles = new Vector3(0, -transform.eulerAngles.z, 0);
+                if (trackedController.triggerPressed)
+                {
+                    GameObject.Destroy(newobj.gameObject, .02f);
+                }
             }
         }
         else

@@ -44,7 +44,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 8
   m_IsActive: 1
 --- !u!1 &1375237890740854
 GameObject:
@@ -61,7 +61,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 8
   m_IsActive: 1
 --- !u!1 &1433675113947670
 GameObject:
@@ -78,7 +78,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 8
   m_IsActive: 1
 --- !u!1 &1490006113317238
 GameObject:
@@ -96,7 +96,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 8
   m_IsActive: 1
 --- !u!1 &1758081805174238
 GameObject:
@@ -113,7 +113,7 @@ GameObject:
   m_TagString: Flag
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 8
   m_IsActive: 1
 --- !u!1 &1959198670820304
 GameObject:
@@ -131,7 +131,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 8
   m_IsActive: 1
 --- !u!4 &4414334431554782
 Transform:
@@ -218,7 +218,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1758081805174238}
   m_LocalRotation: {x: 1, y: -0, z: -0, w: 0.000000021855694}
-  m_LocalPosition: {x: 9.235, y: 0.46832973, z: 5.247}
+  m_LocalPosition: {x: 20.721605, y: 3.833671, z: 18.576021}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4414334431554782}
@@ -533,6 +533,8 @@ MonoBehaviour:
   healthBarOuter: {fileID: 0}
   ring: {fileID: 0}
   team: 0
+  coinPrefab: {fileID: 4493706826965114, guid: 922de5fcccd3cc74396f60abc816d918, type: 2}
+  unitPrefab: {fileID: 4612981448762026, guid: d1e275df086052746a1e4ab41c9279e9, type: 2}
 --- !u!136 &136023820749943516
 CapsuleCollider:
   m_ObjectHideFlags: 1

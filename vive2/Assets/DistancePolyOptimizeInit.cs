@@ -7,7 +7,7 @@ public class DistancePolyOptimizeInit : MonoBehaviour {
     public Transform highPolyModelVR, lowPolyModelVR, highPolyModelPC, lowPolyModelPC;
     public List<GameObject> Children;
 
-    float maxHighPolyDistance = 10;
+    float maxHighPolyDistance = 20;
 
     // Use this for initialization
     void Start ()
@@ -26,7 +26,6 @@ public class DistancePolyOptimizeInit : MonoBehaviour {
     // Update is called once per frame
     void Update () {
         UpdateModel();
-
     }
 
     //Activates the high or low poly model depending on how far away it is from the camera
@@ -50,8 +49,7 @@ public class DistancePolyOptimizeInit : MonoBehaviour {
                 highPolyModelVR.gameObject.SetActive(true);
             }
         }
-
-
+        
         //Do Polygon Optimization for PC Screen
         cam = GameObject.FindGameObjectWithTag("MainCameraPC");
         if (cam != null)
