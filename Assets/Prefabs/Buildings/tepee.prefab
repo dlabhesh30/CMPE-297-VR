@@ -259,7 +259,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!1 &1341636634862130
 GameObject:
   m_ObjectHideFlags: 1
@@ -308,7 +308,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!1 &1429709763744388
 GameObject:
   m_ObjectHideFlags: 1
@@ -438,7 +438,7 @@ GameObject:
   - component: {fileID: 199879431985212122}
   m_Layer: 0
   m_Name: Fire
-  m_TagString: Untagged
+  m_TagString: Fire Effect
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -506,6 +506,7 @@ GameObject:
   - component: {fileID: 114064695689447498}
   - component: {fileID: 208511016010865380}
   - component: {fileID: 114587681473080912}
+  - component: {fileID: 114629576812062140}
   m_Layer: 0
   m_Name: tepee
   m_TagString: Untagged
@@ -854,8 +855,8 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1727590877686344}
-  m_LocalRotation: {x: 0, y: -0.122055046, z: 0, w: -0.9925234}
-  m_LocalPosition: {x: -79.956566, y: -0.064401165, z: -118.52937}
+  m_LocalRotation: {x: 0, y: -0.16883878, z: 0, w: -0.9856437}
+  m_LocalPosition: {x: -95.01697, y: -0.06440115, z: -105.68218}
   m_LocalScale: {x: 1.25, y: 1.2499998, z: 1.2499998}
   m_Children:
   - {fileID: 4040391898142314}
@@ -2699,8 +2700,6 @@ MonoBehaviour:
   lowPolyModelVR: {fileID: 0}
   highPolyModelPC: {fileID: 0}
   lowPolyModelPC: {fileID: 0}
-  Children: []
-  maxHighPolyDistance: 15
 --- !u!114 &114587681473080912
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2714,6 +2713,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   health: 50
   maxHealth: 50
+--- !u!114 &114629576812062140
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1727590877686344}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e134a774a83fecb42aaa7a7dfd59f000, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!198 &198952761845899986
 ParticleSystem:
   m_ObjectHideFlags: 1
@@ -2773,7 +2783,7 @@ ParticleSystem:
   moveWithTransform: 0
   moveWithCustomTransform: {fileID: 0}
   scalingMode: 1
-  randomSeed: -174189538
+  randomSeed: 1112589975
   InitialModule:
     serializedVersion: 3
     enabled: 1

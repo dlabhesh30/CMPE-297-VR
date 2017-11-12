@@ -516,7 +516,7 @@ GameObject:
   - component: {fileID: 199082816338615608}
   m_Layer: 0
   m_Name: Fire
-  m_TagString: Untagged
+  m_TagString: Fire Effect
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -568,6 +568,7 @@ GameObject:
   - component: {fileID: 208379858056264504}
   - component: {fileID: 114917593604297538}
   - component: {fileID: 114186953298071042}
+  - component: {fileID: 114219588248580852}
   m_Layer: 0
   m_Name: woodWall
   m_TagString: Untagged
@@ -811,8 +812,8 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1968237010942276}
-  m_LocalRotation: {x: 0, y: -0.12045513, z: 0, w: 0.9927188}
-  m_LocalPosition: {x: -89.95336, y: -0.064400434, z: -110.69004}
+  m_LocalRotation: {x: 0, y: -0.10490835, z: 0, w: -0.9944819}
+  m_LocalPosition: {x: -95.30559, y: -0.06440115, z: -106.43282}
   m_LocalScale: {x: 2.3492076, y: 2.349208, z: 2.349208}
   m_Children:
   - {fileID: 4039501573181588}
@@ -2334,6 +2335,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   health: 100
   maxHealth: 100
+--- !u!114 &114219588248580852
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1968237010942276}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e134a774a83fecb42aaa7a7dfd59f000, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &114742589137457190
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2349,8 +2361,6 @@ MonoBehaviour:
   lowPolyModelVR: {fileID: 0}
   highPolyModelPC: {fileID: 0}
   lowPolyModelPC: {fileID: 0}
-  Children: []
-  maxHighPolyDistance: 15
 --- !u!114 &114917593604297538
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2421,7 +2431,7 @@ ParticleSystem:
   moveWithTransform: 0
   moveWithCustomTransform: {fileID: 0}
   scalingMode: 1
-  randomSeed: -1800029011
+  randomSeed: -1989192964
   InitialModule:
     serializedVersion: 3
     enabled: 1

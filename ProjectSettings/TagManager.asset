@@ -17,6 +17,10 @@ TagManager:
   - PC Player's Building
   - VR Player's Building
   - AI Player's Building
+  - Fire Effect
+  - PolygonOptimizer
+  - Tutorial
+  - Resource Controller
   layers:
   - Default
   - TransparentFX

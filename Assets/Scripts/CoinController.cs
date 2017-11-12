@@ -20,7 +20,7 @@ public class CoinController : MonoBehaviour {
 
         //transform.rotation += Quaternion.Euler(0, Time.deltaTime, 0);
 
-        transform.Rotate(0, transform.rotation.eulerAngles.y + Time.deltaTime, 0);
+        transform.Rotate(0, Time.deltaTime, 0); //transform.rotation.eulerAngles.y + 
 
         if (transform.position.y > ystart + 15)
         {

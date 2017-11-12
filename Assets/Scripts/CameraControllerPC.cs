@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 //using UnityEditor;
 using UnityEngine;
@@ -22,7 +23,7 @@ public class CameraControllerPC : MonoBehaviour
 
     public Building building_placing = Building.None;
     float placeRotation = 0;
-    public bool in_interface = false;
+    public bool inInterface = false;
 
     float viewScale = 1;
 
@@ -79,11 +80,11 @@ public class CameraControllerPC : MonoBehaviour
 
     public void setInInterfaceTrue()
     {
-        in_interface = true;
+        inInterface = true;
     }
     public void setInInterfaceFalse()
     {
-        in_interface = false;
+        inInterface = false;
     }
 
     // Update is called once per frame
@@ -146,7 +147,7 @@ public class CameraControllerPC : MonoBehaviour
         */
 
         //If the mouse is not hovering over a button
-        if (!in_interface)
+        if (!inInterface)
         {
             //set the active state of the hover object to true
             createObj.gameObject.SetActive(true);
@@ -175,7 +176,7 @@ public class CameraControllerPC : MonoBehaviour
                     if (Input.GetMouseButton(0) || Input.GetMouseButtonUp(0))
                     {
                         float dis = Vector3.Distance(startBuildPoint, hit.point);
-                        if (dis > .5f)
+                        if (dis > .5f && placeObj == place_obj_wall)
                         {
                             float xdis = hit.point.x - startBuildPoint.x;
                             float zdis = hit.point.z - startBuildPoint.z;
@@ -186,8 +187,8 @@ public class CameraControllerPC : MonoBehaviour
 
                             float dir = -Mathf.Atan2(hit.point.z - startBuildPoint.z, hit.point.x - startBuildPoint.x) * 180 / Mathf.PI;
                             //Angle(new Vector2(startBuildPoint.x, startBuildPoint.z) , new Vector2(hit.point.x, hit.point.z));
-
-                            for (int i = 0; i <= increments; i++)
+                            
+                            for (int i = 0; i <= Math.Min(increments, 10); i++)
                             {
                                 Transform newobj = Instantiate(placeObj, new Vector3(xpos, 0, zpos), new Quaternion(0, 0, 0, 0)); // startBuildPoint.y
                                 newobj.tag = "PC Player's Building";
@@ -196,9 +197,10 @@ public class CameraControllerPC : MonoBehaviour
                                 {
                                     GameObject.Destroy(newobj.gameObject, .02f);
                                 }
-                                xpos += Mathf.Cos( -Mathf.Deg2Rad * dir ) * (dis / increments); // xdis / increments;
-                                zpos += Mathf.Sin( -Mathf.Deg2Rad * dir ) * (dis / increments);  //zdis / increments;
+                                xpos += Mathf.Cos(-Mathf.Deg2Rad * dir) * (dis / increments); // xdis / increments;
+                                zpos += Mathf.Sin(-Mathf.Deg2Rad * dir) * (dis / increments);  //zdis / increments;
                             }
+                            
                         }
                         else
                         {
@@ -230,7 +232,7 @@ public class CameraControllerPC : MonoBehaviour
                         //GET ALL UNITS THAT ARE SELECTED AND STORE IN LIST
                         for (int i = 0; i < list.Length; i++)
                         {
-                            if (list[i].GetComponent<PlayerUnitController>().selected)
+                            if (list[i].GetComponent<UnitController>().selected)
                             {
                                 listSelected.Add(list[i]);
                             }
@@ -258,6 +260,11 @@ public class CameraControllerPC : MonoBehaviour
                                     row++;
                                 }
                             }
+
+							/*if (!FindObjectOfType<AudioManager> ().isPlaying ("SoldiersMarching")) 
+							{
+								FindObjectOfType<AudioManager> ().Play ("SoldiersMarching");
+							}*/
                         }
                     }
 
@@ -397,7 +404,7 @@ public class CameraControllerPC : MonoBehaviour
         DrawLine(new Vector3(slpoint2.x, slpoint1.y + .1f, slpoint1.z),
                  new Vector3(slpoint2.x, slpoint1.y + .1f, slpoint2.z), Color.blue);
 
-        //in_interface = false;
+        //inInterface = false;
     }
 
     void DrawRectangle(Vector3 point1, Vector3 point2)

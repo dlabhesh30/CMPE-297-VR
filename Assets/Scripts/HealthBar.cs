@@ -6,7 +6,7 @@ public class HealthBar : MonoBehaviour {
 
     GameObject healthBarBack, healthBarFront;
     public float health, maxHealth;
-    Vector3 healthBarFrontScaleStart;
+    Vector3 healthBarFrontScaleStart, healthBarFrontPosStart;
 
     // Use this for initialization
     void Start()
@@ -18,7 +18,8 @@ public class HealthBar : MonoBehaviour {
             if (ts[i].tag == "HealthBarFront")
             {
                 healthBarFront = ts[i].gameObject;
-                healthBarFrontScaleStart = healthBarFront.transform.localScale;
+                healthBarFrontScaleStart = healthBarFront.transform.localScale; // Vector3.Scale( healthBarFront.transform.lossyScale, healthBarFront.transform.localScale); // lossyScale; //healthBarFront.transform.localScale * 
+                healthBarFrontPosStart = healthBarFront.transform.position;
                 //Debug.Log("Here1");
             }
             if (ts[i].tag == "HealthBarBack")
@@ -39,7 +40,10 @@ public class HealthBar : MonoBehaviour {
         if (health < maxHealth)
         {
             healthBarFront.SetActive(true);
-            healthBarBack.SetActive(true);
+            healthBarBack.SetActive(true);                                                          //startPos.y - startScale.y + captured / capturedMax * startScale.y
+
+            //healthBarFront.transform.position = new Vector3(healthBarFront.transform.position.x, healthBarFrontPosStart.y - healthBarFrontScaleStart.y * 2 + health / maxHealth * healthBarFrontScaleStart.y , healthBarFront.transform.position.z);
+
             healthBarFront.transform.localScale = new Vector3(healthBarFront.transform.localScale.x, healthBarFrontScaleStart.y * health / maxHealth, healthBarFront.transform.localScale.z);
         }
         else //If at full health don't show health bar
@@ -48,8 +52,7 @@ public class HealthBar : MonoBehaviour {
             healthBarBack.SetActive(false);
         }
     }
-
-
+    
     //Adds a value healthToAdd to current health value, this can be a positive or negative number
     public void AddHealth(float healthToAdd)
     {

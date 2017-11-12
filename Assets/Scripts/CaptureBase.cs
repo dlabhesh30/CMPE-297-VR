@@ -4,19 +4,13 @@ using UnityEngine;
 
 public class CaptureBase : MonoBehaviour {
 
-    public int team;
+    int team;
 
 	// Use this for initialization
 	void Start () {
-        //team = 1;
-        if (tag == "VR Player's Unit")
-        {
-            team = 1;
-        }
-        if (tag == "PC Player's Unit")
-        {
-            team = 2;
-        }
+
+        team = GetComponent<UnitController>().team;
+        
 	}
 
     // Update is called once per frame
@@ -43,6 +37,7 @@ public class CaptureBase : MonoBehaviour {
         if (nearestFlag != null)
         {
             nearestFlag.BroadcastMessage("Capture", team);
+			FindObjectOfType<AudioManager> ().Play ("Trumpet");
         }
     }
 }

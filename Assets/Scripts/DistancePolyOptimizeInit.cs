@@ -5,9 +5,11 @@ using UnityEngine;
 public class DistancePolyOptimizeInit : MonoBehaviour {
 
     public Transform highPolyModelVR, lowPolyModelVR, highPolyModelPC, lowPolyModelPC;
-    public List<GameObject> Children;
+    //public List<GameObject> Children;
 
-    public float maxHighPolyDistance = 15;
+    //public float maxHighPolyDistance = 15;
+
+    //bool added = false;
 
     // Use this for initialization
     void Start ()
@@ -21,15 +23,27 @@ public class DistancePolyOptimizeInit : MonoBehaviour {
         lowPolyModelVR.gameObject.SetActive(false);
         highPolyModelPC.gameObject.SetActive(true);
         lowPolyModelPC.gameObject.SetActive(false);
+
+        //Add this model to the global list of models to cycle through and optimize
+        //if (transform.gameObject != null)
+
+        //added = true;
+
+        //GlobalPolygonOptimization polygonOptimizer = GameObject.FindGameObjectWithTag("PolygonOptimizer").GetComponent<GlobalPolygonOptimization>();
+        //polygonOptimizer.addModel(transform.gameObject);
+
+        //GlobalPolygonOptimization polygonOptimizer = GameObject.FindGameObjectWithTag("PolygonOptimizer").GetComponent<GlobalPolygonOptimization>();
+        //Add this model to the global list of models to cycle through and optimize
+        //polygonOptimizer.addModel(transform); //GetComponent<DistancePolyOptimizeInit>()
+
+
     }
 
-    // Update is called once per frame
-    void Update () {
-        UpdateModel();
-    }
 
     //Activates the high or low poly model depending on how far away it is from the camera
-    void UpdateModel() {
+    //update model is called from the "PolygonOptimizer" object, which should have the global polygon optimization script attached to it
+    public void UpdateModel(int maxHighPolyDistance) {
+        
         //Do Polygon Optimization for VR Headset
         GameObject cam = GameObject.FindGameObjectWithTag("MainCamera");
         float dist;
@@ -54,6 +68,7 @@ public class DistancePolyOptimizeInit : MonoBehaviour {
         cam = GameObject.FindGameObjectWithTag("MainCameraPC");
         if (cam != null)
         {
+            Debug.Log("Found PC camera");
             dist = Vector3.Distance(cam.transform.position, transform.position);
             //If far enough away activate low poly model and deactivate high poly model
             if (dist > maxHighPolyDistance)
@@ -67,6 +82,10 @@ public class DistancePolyOptimizeInit : MonoBehaviour {
                 lowPolyModelPC.gameObject.SetActive(false);
                 highPolyModelPC.gameObject.SetActive(true);
             }
+        }
+        else
+        {
+            Debug.Log("Couldn't find PC camera");
         }
     }
 }

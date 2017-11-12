@@ -22,6 +22,9 @@ public class SteamVR_Teleporter : MonoBehaviour
 
     bool triggerHeld = false, triggerReleased = false;
 
+    public GameObject tutorialGameObject;
+    ControlsTutorial tutorial;
+
     public Vector3 slpoint1;
     public Vector3 slpoint2;
     public Vector3 targetPoint;
@@ -68,12 +71,14 @@ public class SteamVR_Teleporter : MonoBehaviour
         TeleportTypeUseCollider,
         TeleportTypeUseZeroY
     }
+    
 
     public bool teleportOnClick = false;
-
-    public bool selectOnClick = false;
-
+    
     public TeleportType teleportType = TeleportType.TeleportTypeUseZeroY;
+    
+
+    //public bool selectOnClick = false;
 
     Transform reference
     {
@@ -83,9 +88,12 @@ public class SteamVR_Teleporter : MonoBehaviour
             return (top != null) ? top.origin : null;
         }
     }
+    
 
     void Start()
     {
+        tutorial = tutorialGameObject.GetComponent<ControlsTutorial>(); //FindGameObjectWithTag("Tutorial").GetComponent<ControlsTutorial>();
+
         placeObj = null;
         groundPlane = GameObject.FindGameObjectWithTag("GroundPlane");
         var trackedController = GetComponent<SteamVR_TrackedController>();
@@ -125,7 +133,7 @@ public class SteamVR_Teleporter : MonoBehaviour
     void DoPadPressed(object sender, ClickedEventArgs e)
     {
         //Teleport if the pad is pressed
-        if (teleportOnClick)
+        if (teleportOnClick && tutorial.GetTutorialStep() > 3)
         {
             // First get the current Transform of the the reference space (i.e. the Play Area, e.g. CameraRig prefab)
             var t = reference;
@@ -198,6 +206,10 @@ public class SteamVR_Teleporter : MonoBehaviour
             if (rect.Contains(new Vector2(list[i].GetComponent<Transform>().position.x, list[i].GetComponent<Transform>().position.z), true))
             {
                 list[i].BroadcastMessage("Select");
+                if (tutorial.tutorialStep == 0)
+                {
+                    tutorial.NextTutorialStep();
+                }
             }
             else
             {
@@ -277,13 +289,13 @@ public class SteamVR_Teleporter : MonoBehaviour
                     ArrayList listSelected = new ArrayList();
                     for (int i = 0; i < list.Length; i++)
                     {
-                        if (list[i].GetComponent<PlayerUnitController>().selected)
+                        if (list[i].GetComponent<UnitController>().selected)
                         {
                             listSelected.Add(list[i]);
                         }
                     }
 
-                        float width = Mathf.Sqrt(listSelected.Count); // listSelected.Count; // Mathf.Sqrt(listSelected.Count);
+                    float width = Mathf.Sqrt(listSelected.Count); // listSelected.Count; // Mathf.Sqrt(listSelected.Count);
 
                     if (listSelected.Count == 1)
                     {
@@ -294,7 +306,16 @@ public class SteamVR_Teleporter : MonoBehaviour
                         int row = 0, col = 0;
                         for (int i = 0; i < listSelected.Count; i++)
                         {
-                            ((GameObject)listSelected[i]).BroadcastMessage("Target", targetPoint + new Vector3((col) * .3f - width / 2 * .3f, 0, (row) * .3f - width / 2 * .3f));
+                            if (tutorial.tutorialStep == 1)
+                            {
+                                if (Vector2.Distance(new Vector2(tutorial.tutorialSlides[4].position.x, tutorial.tutorialSlides[4].position.z) , new Vector2(targetPoint.x, targetPoint.z)) < 2)
+                                {
+                                    tutorial.NextTutorialStep();
+                                }
+                                
+                            }
+                            //((GameObject)listSelected[i]).BroadcastMessage("Target", targetPoint + new Vector3((col) * .3f - width / 2 * .3f, 0, (row) * .3f - width / 2 * .3f));
+                            ((GameObject)listSelected[i]).GetComponent<UnitController>().Target(targetPoint + new Vector3((col) * .3f - width / 2 * .3f, 0, (row) * .3f - width / 2 * .3f));
                             slpoint1 = new Vector3(0, 0, 0);
                             slpoint2 = new Vector3(0, 0, 0);
                             col++;
@@ -304,6 +325,10 @@ public class SteamVR_Teleporter : MonoBehaviour
                                 row++;
                             }
                         }
+						if (!FindObjectOfType<AudioManager> ().isPlaying ("SoldiersMarching")) 
+						{
+							FindObjectOfType<AudioManager> ().Play ("SoldiersMarching");
+						}
                     }
                 }
                 //teleport
@@ -345,7 +370,7 @@ public class SteamVR_Teleporter : MonoBehaviour
                 buildingRotation -= (px - lastPx) * 120; //* (padXPrev - e.padX);
             }
 
-            if (swipingVertically && py != 0 && lastPy != 0)
+            if (swipingVertically && py != 0 && lastPy != 0 && tutorial.GetTutorialStep() > 3)
             {
                 float magnitude = transform.parent.gameObject.transform.localScale.magnitude;
                 transform.parent.gameObject.transform.localScale += new Vector3(1, 1, 1) * (py - lastPy) * magnitude;
@@ -433,7 +458,6 @@ public class SteamVR_Teleporter : MonoBehaviour
 
         if (trackedController.triggerPressed)
         {
-
             // Create a plane at the Y position of the Play Area
             // Then create a Ray from the origin of the controller in the direction that the controller is pointing
 
