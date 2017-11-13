@@ -11,13 +11,24 @@ public class SpawnTeam : MonoBehaviour {
     // Use this for initialization
     void Start ()
     {
-        Instantiate(townHallPrefab, transform.position + new Vector3(-2,0,0), Quaternion.identity);
+        Transform townHall = Instantiate(townHallPrefab, transform.position + new Vector3(-2, 0, 0), Quaternion.identity);
+        if (team == 1)
+            townHall.tag = "VR Player's Building";
+        else
+        if (team == 2)
+            townHall.tag = "PC Player's Building";
+        else
+        if (team == 3)
+            townHall.tag = "AI Player's Building";
+
         for (int ix = 0; ix < 5; ix++)
-        for (int iy = 0; iy < 2; iy++)
+        {
+            for (int iy = 0; iy < 2; iy++)
             {
-                Transform newobj = Instantiate(unitPrefab, transform.position + new Vector3(2 + ix * .4f, 0, iy * .4f), Quaternion.identity);
-                newobj.GetComponent<UnitController>().SetTeam(team);
+                Transform unit = Instantiate(unitPrefab, transform.position + new Vector3(2 + ix * .4f, 0, iy * .4f), Quaternion.identity);
+                unit.GetComponent<UnitController>().SetTeam(team);
             }
+        }
     }
 	
 	// Update is called once per frame

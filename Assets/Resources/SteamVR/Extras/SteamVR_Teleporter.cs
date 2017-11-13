@@ -325,10 +325,6 @@ public class SteamVR_Teleporter : MonoBehaviour
                                 row++;
                             }
                         }
-						if (!FindObjectOfType<AudioManager> ().isPlaying ("SoldiersMarching")) 
-						{
-							FindObjectOfType<AudioManager> ().Play ("SoldiersMarching");
-						}
                     }
                 }
                 //teleport

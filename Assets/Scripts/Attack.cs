@@ -5,6 +5,13 @@ using UnityEngine;
 public class Attack : MonoBehaviour {
 
     public bool fighting = false;
+    public AudioClip attackSoundWood;
+    public AudioClip attackSoundSword;
+    public AudioClip swordStabbed;
+    public AudioClip woodStabbed;
+    bool selectSwordAttackSound = true;
+
+    float attackTimer;
 
     // Use this for initialization
     void Start () {
@@ -33,11 +40,26 @@ public class Attack : MonoBehaviour {
         //Fight with nearest enemy unit if it exists
         if (nearestEnemy != null && Vector3.Distance(nearestEnemy.transform.position, transform.position) < 1)
         {
-			if (!FindObjectOfType<AudioManager> ().isPlaying ("SwordClash")) 
-			{
-				FindObjectOfType<AudioManager> ().Play ("SwordClash");
-			}
+            //Subtract Health
 			nearestEnemy.GetComponent<HealthBar>().AddHealth(-1f * Time.deltaTime); //health -=1 * Time.deltaTime;
+            var attackSoundSource = transform.GetComponent<AudioSource>();
+            if (!FindObjectOfType<AudioManager>().isPlaying(attackSoundSource))
+            {
+                if (selectSwordAttackSound)
+                {
+                    FindObjectOfType<AudioManager>().PlayOneShot(attackSoundSource, attackSoundSword);
+                    FindObjectOfType<AudioManager>().PlayOneShot(attackSoundSource, swordStabbed);
+                    selectSwordAttackSound = false;
+                }
+                else
+                {
+                    FindObjectOfType<AudioManager>().PlayOneShot(attackSoundSource, attackSoundWood);
+                    FindObjectOfType<AudioManager>().PlayOneShot(attackSoundSource, woodStabbed);
+                    selectSwordAttackSound = true;
+                }
+                
+            }
+           
             fighting = true;
             //Face towards the enemy
             FaceTowardsObject(nearestEnemy);
@@ -46,13 +68,23 @@ public class Attack : MonoBehaviour {
         {
             //If has no nearest enemy unit in range, check for enemy buildings that are in range
             nearestEnemy = GetNearestEnemyBuilding();
-
+            var attackSoundSource = transform.GetComponent<AudioSource>();
+            //if (!FindObjectOfType<AudioManager>().isPlaying(attackSoundSource))
+            if (attackTimer <= 0)
+            {
+                attackTimer = Random.Range(1, 3);
+                FindObjectOfType<AudioManager>().PlayOneShot(attackSoundSource, attackSoundWood);
+            }
+            else
+            {
+                attackTimer -= Time.deltaTime;
+            }
+                selectSwordAttackSound = true;                           
             //Attack closest enemy building if it exists
             if (nearestEnemy != null && Vector3.Distance(nearestEnemy.transform.position, transform.position) < 1)
             {
                 nearestEnemy.GetComponent<HealthBar>().AddHealth(-1 * Time.deltaTime);
-                fighting = true;
-				FindObjectOfType<AudioManager>().Play("SwordClash");
+                fighting = true;				
                 FaceTowardsObject(nearestEnemy);
             }
             else //If closest enemy building doesn't exist, then do nothing

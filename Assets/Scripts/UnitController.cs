@@ -156,11 +156,10 @@ public class UnitController : MonoBehaviour {
                 if (targetIndicatorSet)
                 {
                     hasTarget = false;
-                    Destroy(targetIndicator[0].gameObject);
-                    //Destroy(targetIndicator[1].gameObject);
+                    Destroy(targetIndicator[0].gameObject);                    
                     targetIndicatorSet = false;
-					transform.GetComponent<AudioSource> ().Stop ();
-					//FindObjectOfType<AudioManager> ().Stop ("SoldiersMarching");
+                    var marchingSound = transform.GetComponent<AudioSource>();
+                    FindObjectOfType<AudioManager>().Stop(marchingSound);                    
                 }
             }
             else
@@ -170,12 +169,7 @@ public class UnitController : MonoBehaviour {
 
                 //targetPoint.y + height
                 //DRAW TARGET CROSS
-                targetIndicator[0] = Instantiate(targetPrefab, new Vector3(targetPoint.x - .1f, .01f, targetPoint.z - .1f), Quaternion.identity);				
-					/*DrawLine(new Vector3(targetPoint.x - .1f, targetPoint.y + height, targetPoint.z - .1f),
-                         new Vector3(targetPoint.x + .1f, targetPoint.y + height, targetPoint.z + .1f), Color.blue, false);
-				
-                targetIndicator[1] = DrawLine(new Vector3(targetPoint.x - .1f, targetPoint.y + height, targetPoint.z + .1f),
-                         new Vector3(targetPoint.x + .1f, targetPoint.y + height, targetPoint.z - .1f), Color.blue, false);*/
+                targetIndicator[0] = Instantiate(targetPrefab, new Vector3(targetPoint.x - .1f, .01f, targetPoint.z - .1f), Quaternion.identity);									
             }
         }
 
@@ -215,8 +209,9 @@ public class UnitController : MonoBehaviour {
             {
                 Destroy(targetIndicator[0]);
                 targetIndicatorSet = false;				
-            }
-			transform.GetComponent<AudioSource> ().Play ();
+            }        
+            var marchingSound = transform.GetComponent<AudioSource> ();
+            FindObjectOfType<AudioManager>().Play(marchingSound);
             targetPoint = target + new Vector3(0,.05f,0);
             hasTarget = true;
             selected = false;

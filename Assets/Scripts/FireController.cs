@@ -5,7 +5,7 @@ using UnityEngine;
 public class FireController : MonoBehaviour {
 
     GameObject fire;
-    HealthBar healthBar;
+    HealthBar healthBar;    
 
     // Use this for initialization
     void Start () {
@@ -27,10 +27,17 @@ public class FireController : MonoBehaviour {
         
         if (healthBar.health < healthBar.maxHealth / 2)
         {
+            var fireSound = transform.GetComponent<AudioSource>();            
             fire.SetActive(true);
+            if (!FindObjectOfType<AudioManager>().isPlaying(fireSound))
+            {
+                FindObjectOfType<AudioManager>().Play(fireSound);
+            }
         }
         else
         {
+            var fireSound = transform.GetComponent<AudioSource>();
+            FindObjectOfType<AudioManager>().Stop(fireSound);
             fire.SetActive(false);
         }
 	}

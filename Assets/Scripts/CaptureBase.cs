@@ -37,7 +37,6 @@ public class CaptureBase : MonoBehaviour {
         if (nearestFlag != null)
         {
             nearestFlag.BroadcastMessage("Capture", team);
-			FindObjectOfType<AudioManager> ().Play ("Trumpet");
         }
     }
 }

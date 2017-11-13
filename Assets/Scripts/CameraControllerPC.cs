@@ -250,7 +250,8 @@ public class CameraControllerPC : MonoBehaviour
                             int row = 0, col = 0;
                             for (int i = 0; i < listSelected.Count; i++)
                             {
-                                ((GameObject)listSelected[i]).BroadcastMessage("Target", targetPoint + new Vector3((col) * .3f - width / 2 * .3f, 0, (row) * .3f - width / 2 * .3f));
+                                //((GameObject)listSelected[i]).BroadcastMessage("Target", targetPoint + new Vector3((col) * .3f - width / 2 * .3f, 0, (row) * .3f - width / 2 * .3f));
+                                ((GameObject)listSelected[i]).GetComponent<UnitController>().Target(targetPoint + new Vector3((col) * .3f - width / 2 * .3f, 0, (row) * .3f - width / 2 * .3f));
                                 slpoint1 = new Vector3(0, 0, 0);
                                 slpoint2 = new Vector3(0, 0, 0);
                                 col++;
@@ -260,11 +261,6 @@ public class CameraControllerPC : MonoBehaviour
                                     row++;
                                 }
                             }
-
-							/*if (!FindObjectOfType<AudioManager> ().isPlaying ("SoldiersMarching")) 
-							{
-								FindObjectOfType<AudioManager> ().Play ("SoldiersMarching");
-							}*/
                         }
                     }
 

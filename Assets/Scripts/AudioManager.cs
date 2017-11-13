@@ -3,63 +3,83 @@
 using UnityEngine.Audio;
 using UnityEngine;
 
-public class AudioManager : MonoBehaviour 
+public class AudioManager : MonoBehaviour
 {
-	public static AudioManager _instance;
-	public Sound[] sounds; 
-	// Use this for initialization
-	void Awake () 
-	{
-		if (_instance == null) {
-			_instance = this; 
-		} 
-		else 
-		{
-			Destroy (gameObject);
-			return;
-		}
-		foreach (var sound in sounds) 
-		{
-			sound.audioSource = gameObject.AddComponent<AudioSource> ();
-			sound.audioSource.clip = sound.clip;
-			sound.audioSource.volume = sound.volume;
-			sound.audioSource.pitch = sound.pitch;
-			sound.audioSource.loop = sound.loop;
-		}
-	}
+    public static AudioManager _instance;
+//    public GameObject pcCamera;
+  //  public GameObject vrCamera;
 
-	void Start()
-	{
-		Play ("BattleMusic");
-	}
+    bool listenerIsVR = true;
 
-	public void Play (string soundName)
-	{
-		Sound sound = Array.Find (sounds, s => s.name == soundName);
-		if (sound == null) 
-		{
-			return;
-		}
-		sound.audioSource.Play();
-	}
+    // Use this for initialization
+    void Awake()
+    {
+        if (_instance == null)
+        {
+            _instance = this;
+        }
+        else
+        {
+            Destroy(gameObject);
+            return;
+        }
+    }
 
-	public void Stop (string soundName)
-	{
-		Sound sound = Array.Find (sounds, s => s.name == soundName);
-		if (sound == null) 
-		{
-			return;
-		}
-		sound.audioSource.Stop();
-	}
+    void Start()
+    {
+        var battleMusic = GetComponent<AudioSource>();
+        Play(battleMusic);
+    }
 
-	public bool isPlaying (string soundName)
-	{
-		Sound sound = Array.Find (sounds, s => s.name == soundName);
-		if (sound.audioSource.isPlaying) 
-		{
-			return true;
-		}
-		return false;
-	}
+    void Update()
+    {
+      /*  if (listenerIsVR)
+        {
+            pcCamera.GetComponent<AudioListener>().enabled = false;
+            vrCamera.GetComponent<AudioListener>().enabled = true;
+        }
+        else
+        {
+            pcCamera.GetComponent<AudioListener>().enabled = true;
+            vrCamera.GetComponent<AudioListener>().enabled = false;
+        }
+
+        listenerIsVR = !listenerIsVR;*/
+    }
+
+    public void Play(AudioSource soundName)
+    {
+        if (soundName == null)
+        {
+            return;
+        }
+        soundName.Play();
+    }
+
+    public void PlayOneShot(AudioSource audioSource,AudioClip soundClip)
+    {
+        if (audioSource == null)
+        {
+            return;
+        }
+        audioSource.PlayOneShot(soundClip, 1f);
+    }
+
+    public void Stop(AudioSource soundName)
+    {
+        if (soundName == null)
+        {
+            return;
+        }
+        soundName.Stop();
+    }
+
+    public bool isPlaying(AudioSource soundName)
+    {
+        if (soundName.isPlaying)
+        {
+            return true;
+        }
+        return false;
+    }
 }

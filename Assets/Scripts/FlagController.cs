@@ -127,9 +127,10 @@ public class FlagController : MonoBehaviour {
             if (captured < capturedMax)
             {
                 captured += 1 * Time.deltaTime;
-                if (captured >= capturedMax)
+                if (captured > capturedMax)
                 {
-                    
+                    var trumpetSound = transform.GetComponent<AudioSource>();
+                    FindObjectOfType<AudioManager>().Play(trumpetSound);
                     captured = capturedMax;
                     if (team == VRteam)
                     {
@@ -141,7 +142,6 @@ public class FlagController : MonoBehaviour {
                     }
                     if (team == AIteam)
                     {
-						FindObjectOfType<AudioManager> ().Play ("Trumpet");
                         SetAllColors(Color.yellow);
                     }
                 }
@@ -167,7 +167,6 @@ public class FlagController : MonoBehaviour {
                 }
                 if (team == AIteam)
                 {
-					FindObjectOfType<AudioManager> ().Play ("Trumpet");
                     SetBarColor(Color.yellow);
                 }
             }
