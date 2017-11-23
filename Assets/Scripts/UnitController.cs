@@ -12,7 +12,7 @@ public class UnitController : MonoBehaviour {
     public int team;
     
     //Target and Selection Indicator Variables
-    GameObject selectCircle;
+    GameObject selectCircle, debugText;
     public Vector3 targetPoint;
     public bool selected, hasTarget = false;
     bool targetIndicatorSet = false, selectionIndicatorSet = false;
@@ -22,16 +22,42 @@ public class UnitController : MonoBehaviour {
     NavMeshAgent agent;
     Rigidbody rb;
     Transform modelVR, modelPC;
+    
+    ResourceController rc;
 
+    GameSettings gameSettings;
+    
     public GameObject targetPrefab;
+
+    private void OnDestroy()
+    {
+        switch (team)
+        {
+            case 1:
+                rc.VRUnits -= 1;
+                break;
+            case 2:
+                rc.PCUnits -= 1;
+                break;
+            case 3:
+                rc.AIUnits -= 1;
+                break;
+        }
+    }
 
     // Use this for initialization
     void Start ()
     {
+        gameSettings = GameObject.FindGameObjectWithTag("GameSettings").GetComponent<GameSettings>();
+        GameObject resourceController;
+        resourceController = GameObject.FindGameObjectWithTag("Resource Controller");
+        rc = resourceController.GetComponent<ResourceController>();
+
         //Navigation Agent
         agent = GetComponent<NavMeshAgent>();
         agent.updateUpAxis = false;
         agent.updateRotation = false;
+        agent.speed = gameSettings.gameSpeed / 2;
 
         //3D Model
         //modelVR = transform.GetChild(0);
@@ -57,6 +83,10 @@ public class UnitController : MonoBehaviour {
             if (transform.GetChild(i).gameObject.name == "SelectCircle")
             {
                 selectCircle = transform.GetChild(i).gameObject;
+            }
+            if (transform.GetChild(i).gameObject.name == "DebugText")
+            {
+                debugText = transform.GetChild(i).gameObject;
             }
         }
 
@@ -137,43 +167,53 @@ public class UnitController : MonoBehaviour {
         selectionIndicator[0].transform.Rotate(sli_rx, sli_ry, sli_rz); //rotation = selectionIndicator[0].transform.rotation + new Quaternion(0, 1 * Time.deltaTime, 0, 0);
         */
         
-
         if (agent.velocity.magnitude > .2f)
         transform.rotation = Quaternion.LookRotation(agent.velocity + new Vector3(0, 0, 0));
 
         if (modelVR.gameObject.activeSelf || modelPC.gameObject.activeSelf)
-            Animating(agent.velocity);
+            Animating(agent.velocity / gameSettings.gameSpeed);
 
         float height = -.02f; // .01f;
 
         selectCircle.SetActive(selected);
+
         
         if (hasTarget == true)
-        {			
-            if (Vector3.Distance(transform.position, targetPoint) < .1)
+        {
+            //debugText.GetComponent<TextMesh>().text = "Has Target";
+
+            if (Vector3.Distance(transform.position, targetPoint) < .1f)
             {
                 //If close to target stop drawing target indicator
                 if (targetIndicatorSet)
                 {
+                    //Debug.Log("HAS INDICATOR");
                     hasTarget = false;
-                    Destroy(targetIndicator[0].gameObject);                    
+                    Destroy(targetIndicator[0].gameObject);
                     targetIndicatorSet = false;
                     var marchingSound = transform.GetComponent<AudioSource>();
-                    FindObjectOfType<AudioManager>().Stop(marchingSound);                    
+                    FindObjectOfType<AudioManager>().Stop(marchingSound);
                 }
             }
             else
             if (!targetIndicatorSet)
             {
                 targetIndicatorSet = true;
-
+                //Debug.Log("HERE");
                 //targetPoint.y + height
                 //DRAW TARGET CROSS
-                targetIndicator[0] = Instantiate(targetPrefab, new Vector3(targetPoint.x - .1f, .01f, targetPoint.z - .1f), Quaternion.identity);									
+                targetIndicator[0] = Instantiate(targetPrefab, 
+                    new Vector3(targetPoint.x - .1f, .05f, targetPoint.z - .1f), Quaternion.identity);
+
+                Destroy(targetIndicator[0].gameObject, 2);
             }
         }
-
-	}
+        else
+        {
+            //Debug.Log("HERE4");
+            //debugText.GetComponent<TextMesh>().text = "No Target";
+        }
+    }
 
     void Select()
     {

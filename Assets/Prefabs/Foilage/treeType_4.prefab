@@ -21,6 +21,8 @@ GameObject:
   - component: {fileID: 4252695612744292}
   - component: {fileID: 135897290725099758}
   - component: {fileID: 23318707755574894}
+  - component: {fileID: 114916558056147506}
+  - component: {fileID: 114679325729213552}
   m_Layer: 0
   m_Name: treeType_4
   m_TagString: Untagged
@@ -36,13 +38,13 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4690449265123214}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: HighPolyModelPC
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!1 &1112024979296430
 GameObject:
   m_ObjectHideFlags: 0
@@ -51,7 +53,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4277326375173356}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: HighPolyModelVR
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -104,7 +106,7 @@ GameObject:
   - component: {fileID: 4863157023390168}
   - component: {fileID: 33103236873129792}
   - component: {fileID: 23399989201503686}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Cylinder001
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -143,7 +145,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!1 &1507886721259662
 GameObject:
   m_ObjectHideFlags: 1
@@ -154,7 +156,7 @@ GameObject:
   - component: {fileID: 4593674020835522}
   - component: {fileID: 33389672521487554}
   - component: {fileID: 23635448655905658}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Cylinder001
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -229,7 +231,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!1 &1739242687533022
 GameObject:
   m_ObjectHideFlags: 1
@@ -240,7 +242,7 @@ GameObject:
   - component: {fileID: 4534687408919432}
   - component: {fileID: 33606491195179662}
   - component: {fileID: 23488391584878540}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Cone001
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -275,7 +277,7 @@ GameObject:
   - component: {fileID: 4839997801677234}
   - component: {fileID: 33510551381923754}
   - component: {fileID: 23236864813700040}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Cone001
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -350,12 +352,12 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1008948884621940}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.92568207, y: 3.3533413, z: -19.081726}
-  m_LocalScale: {x: 11.75933, y: 11.759332, z: 11.759332}
+  m_LocalPosition: {x: 106.77, y: -0.07, z: 148.47}
+  m_LocalScale: {x: 23.00793, y: 23.007929, z: 23.007929}
   m_Children:
   - {fileID: 4277326375173356}
-  - {fileID: 4690449265123214}
   - {fileID: 4992568661125302}
+  - {fileID: 4690449265123214}
   - {fileID: 4007648238443392}
   m_Father: {fileID: 0}
   m_RootOrder: 0
@@ -466,7 +468,7 @@ Transform:
   - {fileID: 4534687408919432}
   - {fileID: 4593674020835522}
   m_Father: {fileID: 4252695612744292}
-  m_RootOrder: 1
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &4691972973838436
 Transform:
@@ -535,7 +537,7 @@ Transform:
   - {fileID: 4599384576003652}
   - {fileID: 4095097775201842}
   m_Father: {fileID: 4252695612744292}
-  m_RootOrder: 2
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!23 &23109320492668658
 MeshRenderer:
@@ -1149,6 +1151,35 @@ MeshCollider:
   m_InflateMesh: 0
   m_SkinWidth: 0.01
   m_Mesh: {fileID: 10209, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!114 &114679325729213552
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1008948884621940}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4cfa7974ba23fb0408279bcb84cbb70e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  bucketX: 0
+  bucketZ: 0
+  positionSet: 0
+--- !u!114 &114916558056147506
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1008948884621940}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 16999932162b10c4ebb46268007f50af, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  highPolyModelVR: {fileID: 0}
+  lowPolyModelVR: {fileID: 0}
+  highPolyModelPC: {fileID: 0}
+  lowPolyModelPC: {fileID: 0}
 --- !u!135 &135897290725099758
 SphereCollider:
   m_ObjectHideFlags: 1

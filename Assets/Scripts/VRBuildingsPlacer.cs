@@ -10,24 +10,22 @@ public class VRBuildingsPlacer : MonoBehaviour
     public GameObject groundPlane;
 
     //place_obj_turret and place_obj_wall are the objects floating around your hand, placeObj is the building object you have currently selected to place
-    public Transform placeObj, place_obj_turret, place_obj_wall, place_obj_hut;
+    public Transform placeObj, place_obj_turret, place_obj_wall, place_obj_hut, place_obj_gate;
 
     //Building cost indicator is the number that floats over the buildings when placing them in VR
-    public Transform buildingCostIndicator, floatingNumberPrefab;
+    //public Transform buildingCostIndicator, floatingNumberPrefab;
 
     //buildingSelector is the parent object of all the objects floating around your hand, so if you rotate it then those objects will rotate too
     public Transform buildingSelector;
 
     Vector3 startBuildPoint;
-    public Transform wallPrefab, turretPrefab, hutPrefab;
+    public Transform wallPrefab, turretPrefab, hutPrefab, gatePrefab;
 
     public int createObjSelected = 0;
 
-    bool triggerHeld = false, triggerReleased = false;
+    bool triggerHeld = false, triggerReleased = false, triggerPressed = false, triggerHeldPrev;
     
-    public Vector3 slpoint1;
-    public Vector3 slpoint2;
-    public Vector3 targetPoint;
+    public Vector3 slpoint1, slpoint2, targetPoint;
 
     bool clicked = false;
 
@@ -45,6 +43,9 @@ public class VRBuildingsPlacer : MonoBehaviour
     VRController vrcontroller;
 
     float buildingRotation = 90;
+    
+    BuildingsPlacer buildingsPlacer;
+
     /*
     private enum controlModeState
     {
@@ -82,6 +83,7 @@ public class VRBuildingsPlacer : MonoBehaviour
     // Use this for initialization
     void Start()
     {
+        buildingsPlacer = GetComponent<BuildingsPlacer>();
         vrcontroller = GetComponent<VRController>();
         resourceControllerGameObject = GameObject.FindGameObjectWithTag("Resource Controller");
 
@@ -105,6 +107,9 @@ public class VRBuildingsPlacer : MonoBehaviour
             if (t != null)
                 t.position = new Vector3(t.position.x, Terrain.activeTerrain.SampleHeight(t.position), t.position.z);
         }
+
+        //buildingRotation = optionSelected / 360 * options;
+        buildingRotation = 4 / 360 * 5; //icky line
     }
     
     void DoPadTouched(object sender, ClickedEventArgs e)
@@ -147,6 +152,8 @@ public class VRBuildingsPlacer : MonoBehaviour
 
             if (swipingHorizontally && px != 0 && lastPx != 0)
             {
+                device.TriggerHapticPulse(300);
+
                 buildingRotation -= (px - lastPx) * 120; //* (padXPrev - e.padX);
             }
 
@@ -185,7 +192,7 @@ public class VRBuildingsPlacer : MonoBehaviour
                 scale = Mathf.Lerp(0, 1, selectionTimer / 10); //(scale + 0) / 2;
 
             }
-            buildingRotation = (Mathf.Round(buildingRotation / 90) * 90 + buildingRotation) / 2;
+            buildingRotation = (Mathf.Round(buildingRotation / (360 / 5)) * (360 / 5) + buildingRotation) / 2;
         }
 
         buildingSelector.localScale = new Vector3(scale, scale, scale);
@@ -231,7 +238,7 @@ public class VRBuildingsPlacer : MonoBehaviour
             // and output the distance along the ray that it intersects
             hasGroundTarget = plane.Raycast(ray, out dist);
         }
-        
+
         Transform placePrefab = turretPrefab;
 
         bool placing = false;
@@ -244,12 +251,28 @@ public class VRBuildingsPlacer : MonoBehaviour
         //GameObject[] models;
         //models = createObj.GetComponentsInChildren<GameObject>();
 
-        Transform wallTransform, turretTransform, tepeeTransform;
+        Transform wallTransform, turretTransform, tepeeTransform, gateTransform;
         wallTransform = createObj.GetChild(0);
         turretTransform = createObj.GetChild(1);
         tepeeTransform = createObj.GetChild(2);
+        gateTransform = createObj.GetChild(3);
 
-        if (Mathf.Round(buildingRotation / 90) * 90 == 0 || Mathf.Round(buildingRotation / 90) * 90 == 360)
+        int options = 5;
+        int optionSelected = 0;
+
+        optionSelected = (int) Mathf.Round(buildingRotation / (360 / options));
+
+        /*
+        for (int i = 0; i < options; i++)
+        {
+            if (Mathf.Round(buildingRotation / (360 / options)) == i)
+            {
+
+            }
+        }*/
+
+        //Build Turret
+        if (optionSelected == 0 || optionSelected == 5) /// (Mathf.Round(buildingRotation / 90) * 90 == 0 || Mathf.Round(buildingRotation / 90) * 90 == 360)
         {
             vrcontroller.controlMode = VRController.controlModeState.building_turret;
             placeObj = place_obj_turret; // turretTransform;
@@ -257,10 +280,12 @@ public class VRBuildingsPlacer : MonoBehaviour
             wallTransform.gameObject.SetActive(false);
             turretTransform.gameObject.SetActive(true);
             tepeeTransform.gameObject.SetActive(false);
+            gateTransform.gameObject.SetActive(false);
             placing = true;
         }
         else
-        if (Mathf.Round(buildingRotation / 90) * 90 == 270)
+        //Build Wall
+        if (optionSelected == 1) // (Mathf.Round(buildingRotation / 90) * 90 == 270)
         {
             vrcontroller.controlMode = VRController.controlModeState.building_wall;
             placeObj = place_obj_wall; // wallTransform;
@@ -268,10 +293,12 @@ public class VRBuildingsPlacer : MonoBehaviour
             wallTransform.gameObject.SetActive(true);
             turretTransform.gameObject.SetActive(false);
             tepeeTransform.gameObject.SetActive(false);
+            gateTransform.gameObject.SetActive(false);
             placing = true;
         }
         else
-        if (Mathf.Round(buildingRotation / 90) * 90 == 180)
+        //Build Tepee
+        if (optionSelected == 2) // (Mathf.Round(buildingRotation / 90) * 90 == 180)
         {
             vrcontroller.controlMode = VRController.controlModeState.building_hut;
             placeObj = place_obj_hut; // tepeeTransform;
@@ -279,24 +306,58 @@ public class VRBuildingsPlacer : MonoBehaviour
             wallTransform.gameObject.SetActive(false);
             turretTransform.gameObject.SetActive(false);
             tepeeTransform.gameObject.SetActive(true);
+            gateTransform.gameObject.SetActive(false);
             placing = true;
         }
         else
+        //Build Gate
+        if (optionSelected == 3) // (Mathf.Round(buildingRotation / 90) * 90 == 180)
+        {
+            vrcontroller.controlMode = VRController.controlModeState.building_gate;
+            placeObj = place_obj_gate; // tepeeTransform;
+            placePrefab = gatePrefab;
+            wallTransform.gameObject.SetActive(false);
+            turretTransform.gameObject.SetActive(false);
+            tepeeTransform.gameObject.SetActive(false);
+            gateTransform.gameObject.SetActive(true);
+            placing = true;
+        }
+        else
+        //Select Units
         {
             vrcontroller.controlMode = VRController.controlModeState.selecting;
             wallTransform.gameObject.SetActive(false);
             turretTransform.gameObject.SetActive(false);
             tepeeTransform.gameObject.SetActive(false);
+            gateTransform.gameObject.SetActive(false);
         }
 
         GameObject[] cam = GameObject.FindGameObjectsWithTag("MainCamera");
-
+        
         //IF THE TRIGGER IS HELD DOWN
         if (triggerHeld && !trackedController.triggerPressed)
             triggerReleased = true;
         else
             triggerReleased = false;
+
+
+        if (!triggerHeldPrev && trackedController.triggerPressed)
+        {
+            triggerPressed = true;
+        }
+        else
+        {
+            triggerPressed = false;
+        }
+
+        triggerHeldPrev = triggerHeld;
+        
         triggerHeld = trackedController.triggerPressed;
+
+        //Transform wallTransform, turretTransform, tepeeTransform;
+        //wallTransform = createObj.GetChild(0);
+        //turretTransform = createObj.GetChild(1);
+        //tepeeTransform = createObj.GetChild(2);
 
         //Create Buildings, Place Buildings
         /*
@@ -306,13 +367,21 @@ public class VRBuildingsPlacer : MonoBehaviour
         if (vrcontroller.controlMode != VRController.controlModeState.selecting)
         {
 
-            buildingCostIndicator.gameObject.SetActive(true);
-            
             if (placeObj != null)
             {
 
+                //Debug.Log("here1");
+                buildingsPlacer.PlaceBuilding(placePrefab , createObj , (ray.origin + (ray.direction * dist)),
+                -transform.eulerAngles.z, triggerPressed, triggerHeld, triggerReleased,
+                placeObj == place_obj_wall, 1, 10, GameObject.FindGameObjectWithTag("MainCamera").transform.position);
+
+            //buildingCostIndicator.gameObject.SetActive(true);
+                  
+            
+
                 //if (!placeObj.gameObject.GetComponent<PlaceObj>().isColliding)
                 //{
+                /*
                 placeObj.position = (ray.origin + (ray.direction * dist));
                 buildingCostIndicator.position = placeObj.position + new Vector3(0, 1, 0);
                 buildingCostIndicator.eulerAngles = new Vector3(0, 90 - Mathf.Rad2Deg * (Mathf.Atan2(buildingCostIndicator.position.z - transform.position.z, buildingCostIndicator.position.x - transform.position.x)), 0);
@@ -384,8 +453,7 @@ public class VRBuildingsPlacer : MonoBehaviour
                     if (triggerReleased)
                     {
                         //Create floating number
-
-
+                        
                         Vector3 floatingNumberPosition;
                         //startBuildPoint, placeObj.position
                         if (increments > 1)
@@ -395,9 +463,7 @@ public class VRBuildingsPlacer : MonoBehaviour
 
                         Transform floatingNumber = Instantiate(floatingNumberPrefab, floatingNumberPosition,
                              buildingCostIndicator.rotation);
-
-                        
-
+                            
                         int costCoins = 0;
 
                         if (placeObj == place_obj_hut)
@@ -425,12 +491,12 @@ public class VRBuildingsPlacer : MonoBehaviour
                     buildingCostIndicator.GetComponent<TextMesh>().text = "-" + (resourceController.costWall * increments) + " Coins";
                 if (placeObj == place_obj_turret)
                     buildingCostIndicator.GetComponent<TextMesh>().text = "-" + resourceController.costTurret + " Coins";
-
+                    */
             }
         }
         else
         {
-            buildingCostIndicator.gameObject.SetActive(false);
+            //buildingCostIndicator.gameObject.SetActive(false);
         }
     }
 }

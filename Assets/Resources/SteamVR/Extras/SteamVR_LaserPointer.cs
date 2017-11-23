@@ -1,5 +1,6 @@
 ﻿//======= Copyright (c) Valve Corporation, All rights reserved. ===============
 using UnityEngine;
+using UnityEngine.UI;
 using System.Collections;
 
 public struct PointerEventArgs
@@ -26,6 +27,11 @@ public class SteamVR_LaserPointer : MonoBehaviour
     public event PointerEventHandler PointerOut;
 
     Transform previousContact = null;
+
+    public Button aButton;
+    public VRButton vrButton;
+
+    bool triggerJustPressed = false, triggerPressedPrev = false;
 
     // Use this for initialization
     void Start()
@@ -78,6 +84,7 @@ public class SteamVR_LaserPointer : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+
         if (!isActive)
         {
             isActive = true;
@@ -87,7 +94,18 @@ public class SteamVR_LaserPointer : MonoBehaviour
         float dist = 100f;
 
         SteamVR_TrackedController controller = GetComponent<SteamVR_TrackedController>();
-
+        
+        if (controller.triggerPressed && !triggerPressedPrev)
+        {
+            triggerJustPressed = true;
+            //Debug.Log("trigger just pressed");
+        }
+        else
+        {
+            triggerJustPressed = false;
+        }
+        triggerPressedPrev = controller.triggerPressed;
+        
         Ray raycast = new Ray(transform.position, transform.forward);
         RaycastHit hit;
         bool bHit = Physics.Raycast(raycast, out hit);
@@ -128,13 +146,47 @@ public class SteamVR_LaserPointer : MonoBehaviour
             dist = hit.distance;
         }
 
-        if (controller != null && controller.triggerPressed)
+        if (bHit)
         {
-            pointer.transform.localScale = new Vector3(thickness * 5f, thickness * 5f, dist);
-        }
-        else
-        {
-            pointer.transform.localScale = new Vector3(thickness, thickness, dist);
+            bool hasVRButton = false, hasButton = false;
+
+            VRButton hitVRButton = hit.transform.GetComponent<VRButton>();
+            Button hitButton = hit.transform.GetComponent<Button>();
+
+            if (hitVRButton != null)
+            {
+                hasVRButton = true;
+                vrButton = hitVRButton;
+            }
+
+            if (hitButton != null)
+            {
+                hasButton = true;
+                aButton = hitButton;
+            }
+
+            //controller.triggerPressed;
+
+            if (controller != null && triggerJustPressed)
+            {
+                pointer.transform.localScale = new Vector3(thickness * 5f, thickness * 5f, dist);
+
+                if (hasButton)
+                    aButton.onClick.Invoke(); //.GetComponent<Button>()            
+
+                if (hasVRButton)
+                {
+                    vrButton.OnClick();
+                    Debug.Log("VR BUTTON CLICKED");
+                }
+            }
+            else
+            {
+
+                if (hasVRButton)
+                    vrButton.OnHover();
+                pointer.transform.localScale = new Vector3(thickness, thickness, dist);
+            }
         }
         pointer.transform.localPosition = new Vector3(0f, 0f, dist / 2f);
     }

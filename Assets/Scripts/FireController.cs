@@ -5,10 +5,17 @@ using UnityEngine;
 public class FireController : MonoBehaviour {
 
     GameObject fire;
-    HealthBar healthBar;    
+    HealthBar healthBar;
 
-    // Use this for initialization
-    void Start () {
+    AudioManager audioManager;
+    AudioSource audioSource;
+    
+// Use this for initialization
+void Start () {
+        
+        audioManager = FindObjectOfType<AudioManager>();
+        audioSource = transform.GetComponent<AudioSource>();
+
         healthBar = gameObject.GetComponent<HealthBar>();
 
         Transform[] ts = gameObject.GetComponentsInChildren<Transform>();
@@ -25,19 +32,19 @@ public class FireController : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
         
-        if (healthBar.health < healthBar.maxHealth / 2)
+        if (healthBar.health < healthBar.maxHealth / 2 && healthBar.underConstruction == false)
         {
-            var fireSound = transform.GetComponent<AudioSource>();            
+            var fireSound = audioSource;            
             fire.SetActive(true);
-            if (!FindObjectOfType<AudioManager>().isPlaying(fireSound))
+            if (!audioManager.isPlaying(fireSound))
             {
-                FindObjectOfType<AudioManager>().Play(fireSound);
+                audioManager.Play(fireSound);
             }
         }
         else
         {
-            var fireSound = transform.GetComponent<AudioSource>();
-            FindObjectOfType<AudioManager>().Stop(fireSound);
+            var fireSound = audioSource;
+            audioManager.Stop(fireSound);
             fire.SetActive(false);
         }
 	}

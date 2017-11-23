@@ -5,38 +5,48 @@ using UnityEngine;
 public class CaptureBase : MonoBehaviour {
 
     int team;
+    float capturebaseTimer;
 
-	// Use this for initialization
-	void Start () {
+    GameObject[] flags;
 
+    // Use this for initialization
+    void Start () {
+
+        flags = GameObject.FindGameObjectsWithTag("Flag");
         team = GetComponent<UnitController>().team;
-        
-	}
+        capturebaseTimer = 0;
+
+    }
 
     // Update is called once per frame
     void Update() {
         //GameObject cam = GameObject.FindGameObjectWithTag("MainCamera");
-        GameObject[] flags = GameObject.FindGameObjectsWithTag("Flag");
 
-        GameObject nearestFlag = null;
+        capturebaseTimer -= Time.deltaTime;
 
-        float smallestDist = float.MaxValue;
-
-        for (int i = 0; i < flags.Length; i++)
+        if (capturebaseTimer <= 0)
         {
-            GameObject currentFlag = flags[i];
-            float dist;
-            dist = Vector3.Distance(currentFlag.transform.position, transform.position);
-            if (dist < smallestDist && dist < 2.5)
+            capturebaseTimer = .1f;
+            GameObject nearestFlag = null;
+
+            float smallestDist = float.MaxValue;
+
+            for (int i = 0; i < flags.Length; i++)
             {
-                smallestDist = dist;
-                nearestFlag = currentFlag;
+                GameObject currentFlag = flags[i];
+                float dist;
+                dist = Vector3.Distance(currentFlag.transform.position, transform.position);
+                if (dist < smallestDist && dist < 2.5)
+                {
+                    smallestDist = dist;
+                    nearestFlag = currentFlag;
+                }
             }
-        }
 
-        if (nearestFlag != null)
-        {
-            nearestFlag.BroadcastMessage("Capture", team);
+            if (nearestFlag != null)
+            {
+                nearestFlag.GetComponent<FlagController>().Capture(team);
+            }
         }
     }
 }

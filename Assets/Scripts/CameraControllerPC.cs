@@ -7,6 +7,8 @@ using UnityEngine;
 public class CameraControllerPC : MonoBehaviour
 {
     //Rigidbody rb;
+    
+    BuildingsPlacer buildingsPlacer;
 
     public GameObject prefab1;
 
@@ -15,11 +17,11 @@ public class CameraControllerPC : MonoBehaviour
 
     //Placing Prefabs
     public Transform placeObj, createObj, //Object that appears at mouse position when building
-        place_obj_turret, place_obj_wall, place_obj_hut; //Prefabs for what to create
+        place_obj_turret, place_obj_wall, place_obj_hut, place_obj_gate; //Prefabs for what to create
 
     Vector3 startBuildPoint;
 
-    public enum Building { None, Wall, Turret, Tepee };
+    public enum Building { None, Wall, Turret, Tepee, Gate };
 
     public Building building_placing = Building.None;
     float placeRotation = 0;
@@ -42,8 +44,22 @@ public class CameraControllerPC : MonoBehaviour
     Transform childCam;
 
     // Use this for initialization
+
+    BucketGridController bucketGridController;
+
+    //Building cost indicator is the number that floats over the buildings when placing them in VR
+    public Transform buildingCostIndicator, floatingNumberPrefab;
+
+    ResourceController resourceController;
+
     void Start()
     {
+        GameObject resourceControllerGameObject = GameObject.FindGameObjectWithTag("Resource Controller");
+
+        resourceController = resourceControllerGameObject.GetComponent<ResourceController>();
+
+        buildingsPlacer = GetComponent<BuildingsPlacer>();
+        bucketGridController = GameObject.FindGameObjectWithTag("BucketGridController").transform.GetComponent<BucketGridController>();
         //rb = transform.GetComponent<Rigidbody>();
         childCam = transform.GetChild(0); //.gameObject;
         cam = childCam.GetComponent<Camera>();
@@ -53,6 +69,7 @@ public class CameraControllerPC : MonoBehaviour
         //createObj = transform.GetChild(1);
         //PlayerSettings.virtualRealitySupported = false;
     }
+
     /*
     void OnGUI()
     {
@@ -74,8 +91,6 @@ public class CameraControllerPC : MonoBehaviour
         GUILayout.Label("World position: " + p.ToString("F3"));
         GUILayout.EndArea();
     }
-    
-    
     */
 
     public void setInInterfaceTrue()
@@ -90,37 +105,42 @@ public class CameraControllerPC : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-
         float rx = transform.eulerAngles.x;
         float ry = transform.eulerAngles.y;
         float rz = transform.eulerAngles.z;
         childCam.transform.position = transform.position + Quaternion.AngleAxis(ry, Vector3.up) * (childCam.transform.localPosition + new Vector3(0, viewScale, -viewScale))/2;
-            //SetPositionAndRotation(transform.position + new Vector3(0,viewScale,viewScale) , new Vector3(45,0,0));
+        //SetPositionAndRotation(transform.position + new Vector3(0,viewScale,viewScale) , new Vector3(45,0,0));
 
         //Vector3 mouseWorldPos = cam.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, 0, Input.mousePosition.y ));
 
-        Transform wallTransform, turretTransform, tepeeTransform;
+        Transform wallTransform, turretTransform, tepeeTransform, gateTransform;
         wallTransform = createObj.GetChild(0);
         turretTransform = createObj.GetChild(1);
         tepeeTransform = createObj.GetChild(2);
-        
+        gateTransform = createObj.GetChild(3);
+
         wallTransform.gameObject.SetActive(false);
         turretTransform.gameObject.SetActive(false);
         tepeeTransform.gameObject.SetActive(false);
-        ///Credit for Following Switch Statement Code Goes to Andrew Ajemian////////////////////////////////////
+        gateTransform.gameObject.SetActive(false);
+
         switch (building_placing)
         {
             case Building.Tepee:
                 placeObj = place_obj_hut;
-                tepeeTransform.gameObject.SetActive(true); //except this, Arthur Baney wrote this
+                tepeeTransform.gameObject.SetActive(true);
                 break;
             case Building.Wall:
                 placeObj = place_obj_wall;
-                wallTransform.gameObject.SetActive(true); //except this, Arthur Baney wrote this
+                wallTransform.gameObject.SetActive(true);
                 break;
             case Building.Turret:
                 placeObj = place_obj_turret;
-                turretTransform.gameObject.SetActive(true); //except this, Arthur Baney wrote this
+                turretTransform.gameObject.SetActive(true);
+                break;
+            case Building.Gate:
+                placeObj = place_obj_gate;
+                gateTransform.gameObject.SetActive(true);
                 break;
             case Building.None:
                 placeObj = null;
@@ -129,7 +149,6 @@ public class CameraControllerPC : MonoBehaviour
                 placeObj = null;
                 break;
         }
-        //////////////////////////End Andrew's Code///////////////////////////////////////
 
         //if (Input.GetKeyDown(KeyCode.Mouse0))
         //{
@@ -159,64 +178,46 @@ public class CameraControllerPC : MonoBehaviour
                 //CLICK TO PLACE BUILDINGS, CREATE BUILDINGS
                 if (building_placing != Building.None)
                 {
+                    Transform actualPlaceObj;
+                    actualPlaceObj = placeObj;
+
+                    int costCoins = 0;
+                    
+                    switch (building_placing)
+                    {
+                        case Building.Tepee:
+                            actualPlaceObj = place_obj_hut; // tepeeTransform;
+                            costCoins = resourceController.costTepee;
+                            break;
+                        case Building.Wall:
+                            actualPlaceObj = place_obj_wall; // wallTransform;
+                            costCoins = resourceController.costWall;
+                        break;
+                        case Building.Turret:
+                            actualPlaceObj = place_obj_turret; // turretTransform;
+                            costCoins = resourceController.costTurret;
+                            break;
+                        case Building.Gate:
+                            actualPlaceObj = place_obj_gate; // gateTransform;
+                            costCoins = resourceController.costGate;
+                        break;
+                    }
+                    buildingsPlacer.PlaceBuilding(actualPlaceObj, createObj, hit.point,
+                        placeRotation, Input.GetMouseButtonDown(0), Input.GetMouseButton(0), Input.GetMouseButtonUp(0),
+                        placeObj == place_obj_wall, 2, costCoins, transform.GetChild(0).position);
+
+                    //buildingCostIndicator.gameObject.SetActive(true);
+
                     //Stop placing buildings when right clicked
                     if (Input.GetMouseButtonDown(1))
                     {
                         building_placing = Building.None;
                     }
-
-                    //Place buildings when left clicked
-                    if (Input.GetMouseButtonDown(0))
-                    {
-                        startBuildPoint = hit.point;
-                        //Transform newobj = Instantiate(placeObj, createObj.position, new Quaternion(0, 0, 0, 0));
-                        //newobj.eulerAngles = new Vector3(0, placeRotation, 0);
-                    }
-                    //When left click released if mouse point far from start point then create long wall
-                    if (Input.GetMouseButton(0) || Input.GetMouseButtonUp(0))
-                    {
-                        float dis = Vector3.Distance(startBuildPoint, hit.point);
-                        if (dis > .5f && placeObj == place_obj_wall)
-                        {
-                            float xdis = hit.point.x - startBuildPoint.x;
-                            float zdis = hit.point.z - startBuildPoint.z;
-                            int increments = (int)(dis / .4f);
-
-                            float xpos = startBuildPoint.x;
-                            float zpos = startBuildPoint.z;
-
-                            float dir = -Mathf.Atan2(hit.point.z - startBuildPoint.z, hit.point.x - startBuildPoint.x) * 180 / Mathf.PI;
-                            //Angle(new Vector2(startBuildPoint.x, startBuildPoint.z) , new Vector2(hit.point.x, hit.point.z));
-                            
-                            for (int i = 0; i <= Math.Min(increments, 10); i++)
-                            {
-                                Transform newobj = Instantiate(placeObj, new Vector3(xpos, 0, zpos), new Quaternion(0, 0, 0, 0)); // startBuildPoint.y
-                                newobj.tag = "PC Player's Building";
-                                newobj.eulerAngles = new Vector3(0, dir, 0);
-                                if (!Input.GetMouseButtonUp(0))
-                                {
-                                    GameObject.Destroy(newobj.gameObject, .02f);
-                                }
-                                xpos += Mathf.Cos(-Mathf.Deg2Rad * dir) * (dis / increments); // xdis / increments;
-                                zpos += Mathf.Sin(-Mathf.Deg2Rad * dir) * (dis / increments);  //zdis / increments;
-                            }
-                            
-                        }
-                        else
-                        {
-                            Transform newobj = Instantiate(placeObj, new Vector3(startBuildPoint.x, 0, startBuildPoint.z), new Quaternion(0, 0, 0, 0));
-                            newobj.tag = "PC Player's Building";
-                            newobj.eulerAngles = new Vector3(0, placeRotation, 0);
-                            if (!Input.GetMouseButtonUp(0))
-                            {
-                                GameObject.Destroy(newobj.gameObject, .02f);
-                            }
-                        }
-                    }
                 }
-
-                if (building_placing == Building.None)
+                else
+                //if (building_placing == Building.None)
                 {
+                    //buildingCostIndicator.gameObject.SetActive(false);
                     //RIGHT CLICK TO TELL UNITS WHERE TO MOVE
                     if (Input.GetMouseButtonDown(1))
                     {
@@ -243,15 +244,15 @@ public class CameraControllerPC : MonoBehaviour
                         //IF THERE'S ONLY ONE UNIT, SEND IT TO TARGET
                         if (listSelected.Count == 1)
                         {
-                            ((GameObject)listSelected[0]).BroadcastMessage("Target", targetPoint);
+                            ((GameObject)listSelected[0]).GetComponent<UnitController>().Target(targetPoint); // BroadcastMessage("Target", targetPoint);
                         }
                         else //IF THERE'S MULTIPLE UNITS, PUT THEM IN FORMATION
                         {
                             int row = 0, col = 0;
                             for (int i = 0; i < listSelected.Count; i++)
                             {
-                                //((GameObject)listSelected[i]).BroadcastMessage("Target", targetPoint + new Vector3((col) * .3f - width / 2 * .3f, 0, (row) * .3f - width / 2 * .3f));
-                                ((GameObject)listSelected[i]).GetComponent<UnitController>().Target(targetPoint + new Vector3((col) * .3f - width / 2 * .3f, 0, (row) * .3f - width / 2 * .3f));
+                                ((GameObject)listSelected[i]).GetComponent<UnitController>().Target(targetPoint + new Vector3((col) * .3f - width / 2 * .3f, 0, (row) * .3f - width / 2 * .3f)); 
+                                //.BroadcastMessage("Target", targetPoint + new Vector3((col) * .3f - width / 2 * .3f, 0, (row) * .3f - width / 2 * .3f));
                                 slpoint1 = new Vector3(0, 0, 0);
                                 slpoint2 = new Vector3(0, 0, 0);
                                 col++;
@@ -335,8 +336,7 @@ public class CameraControllerPC : MonoBehaviour
             transform.position = vec;
         }
         float scale = transform.position.y / 2;
-
-
+        
         float speed = 500;
         if (Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl))
         {

@@ -31,6 +31,10 @@ public class PC_Buttons : MonoBehaviour {
     {
         ccpc.building_placing = CameraControllerPC.Building.Tepee;
     }
+    public void SetStateGate()
+    {
+        ccpc.building_placing = CameraControllerPC.Building.Gate;
+    }
     public void SetVRVisible()
     {
         //GameObject camObj = GameObject.FindGameObjectWithTag("MainCameraPC");

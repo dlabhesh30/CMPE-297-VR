@@ -7,6 +7,7 @@ public class LoadSceneOnClick : MonoBehaviour {
 
     public void LoadByIndex(int sceneIndex)
     {
+        Debug.Log("loaded scene");
         SceneManager.LoadScene(sceneIndex);
     }
 }

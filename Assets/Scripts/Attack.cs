@@ -4,6 +4,10 @@ using UnityEngine;
 
 public class Attack : MonoBehaviour {
 
+    enum CombatStance { holdPosition, aggressive };
+
+    CombatStance combatStance = CombatStance.holdPosition;
+
     public bool fighting = false;
     public AudioClip attackSoundWood;
     public AudioClip attackSoundSword;
@@ -13,10 +17,25 @@ public class Attack : MonoBehaviour {
 
     float attackTimer;
 
+    float enemyCheckTimer;
+
+    GameObject nearestEnemy;
+
+    public GameObject bucketGrid;
+    BucketGridController bucketGridController;
+    UnitController unitController;
+
     // Use this for initialization
-    void Start () {
-		
-	}
+    void Start ()
+    {
+        unitController = GetComponent<UnitController>();
+        //Debug.Log("HERE");
+        bucketGrid = GameObject.FindGameObjectWithTag("BucketGridController");
+        bucketGridController = bucketGrid.GetComponent<BucketGridController>();
+        nearestEnemy = null;
+        enemyCheckTimer = Random.Range(0,10) / 10f;
+        //Debug.Log("enemyCheckTimer start = " + enemyCheckTimer);
+    }
 
     //FaceTowardsObject
     //This script will make the unit face towards another GameObject identified by the "obj" argument
@@ -34,64 +53,96 @@ public class Attack : MonoBehaviour {
 
 	// Update is called once per frame
 	void Update () {
-        
-        GameObject nearestEnemy = GetNearestEnemyUnit();
 
-        //Fight with nearest enemy unit if it exists
-        if (nearestEnemy != null && Vector3.Distance(nearestEnemy.transform.position, transform.position) < 1)
+        enemyCheckTimer -= Time.deltaTime;
+        
+        if (enemyCheckTimer <= 0) // && !unitController.hasTarget
         {
-            //Subtract Health
-			nearestEnemy.GetComponent<HealthBar>().AddHealth(-1f * Time.deltaTime); //health -=1 * Time.deltaTime;
-            var attackSoundSource = transform.GetComponent<AudioSource>();
-            if (!FindObjectOfType<AudioManager>().isPlaying(attackSoundSource))
+            float attackDistance = .5f;
+            enemyCheckTimer = Random.Range(0, 10) / 10f;
+
+            //Find nearest enemy unit
+            nearestEnemy = GetNearestEnemyUnit();
+
+            //If has no nearest enemy unit in range, check for enemy buildings that are in range
+            if (nearestEnemy == null || Vector3.Distance(nearestEnemy.transform.position, transform.position) > 1)
             {
-                if (selectSwordAttackSound)
+                nearestEnemy = GetNearestEnemyBuilding();
+                attackDistance = 1;
+            }
+
+            //If closest enemy building doesn't exist, then do nothing
+            if (nearestEnemy == null)
+            {
+                fighting = false;
+                Debug.Log("Nearest enemy is null");
+            }
+
+            //Debug.Log("Enemy set to "+ nearestEnemy);
+
+            //Fight with nearest enemy unit if it exists
+            if (nearestEnemy != null)
+            {
+                if (Vector3.Distance(nearestEnemy.transform.position, transform.position) < attackDistance)
                 {
-                    FindObjectOfType<AudioManager>().PlayOneShot(attackSoundSource, attackSoundSword);
-                    FindObjectOfType<AudioManager>().PlayOneShot(attackSoundSource, swordStabbed);
-                    selectSwordAttackSound = false;
+                    //Subtract Health
+                    nearestEnemy.GetComponent<HealthBar>().AddHealth(-100f * Time.deltaTime); //health -=1 * Time.deltaTime;
+                    //var attackSoundSource = transform.GetComponent<AudioSource>();
+                    /*
+                    if (!FindObjectOfType<AudioManager>().isPlaying(attackSoundSource))
+                    {
+                        if (selectSwordAttackSound)
+                        {
+                            FindObjectOfType<AudioManager>().PlayOneShot(attackSoundSource, attackSoundSword);
+                            FindObjectOfType<AudioManager>().PlayOneShot(attackSoundSource, swordStabbed);
+                            selectSwordAttackSound = false;
+                        }
+                        else
+                        {
+                            FindObjectOfType<AudioManager>().PlayOneShot(attackSoundSource, attackSoundWood);
+                            FindObjectOfType<AudioManager>().PlayOneShot(attackSoundSource, woodStabbed);
+                            selectSwordAttackSound = true;
+                        }
+                    }
+                   */
+                    fighting = true;
+                    //Face towards the enemy
+                    FaceTowardsObject(nearestEnemy);
                 }
                 else
                 {
-                    FindObjectOfType<AudioManager>().PlayOneShot(attackSoundSource, attackSoundWood);
-                    FindObjectOfType<AudioManager>().PlayOneShot(attackSoundSource, woodStabbed);
-                    selectSwordAttackSound = true;
+                    //If not in hold position combat stance, then attack nearby units and buildings
+                    fighting = false;
+                    if (Vector3.Distance(nearestEnemy.transform.position, transform.position) < 3 && !unitController.hasTarget 
+                        && (combatStance != CombatStance.holdPosition || tag == "AI Player's Unit"))
+                        unitController.Target(nearestEnemy.transform.position);
                 }
-                
             }
-           
-            fighting = true;
-            //Face towards the enemy
-            FaceTowardsObject(nearestEnemy);
-        }
-        else
-        {
-            //If has no nearest enemy unit in range, check for enemy buildings that are in range
-            nearestEnemy = GetNearestEnemyBuilding();
-            var attackSoundSource = transform.GetComponent<AudioSource>();
-            //if (!FindObjectOfType<AudioManager>().isPlaying(attackSoundSource))
-            if (attackTimer <= 0)
-            {
-                attackTimer = Random.Range(1, 3);
-                FindObjectOfType<AudioManager>().PlayOneShot(attackSoundSource, attackSoundWood);
-            }
+            /*
             else
             {
-                attackTimer -= Time.deltaTime;
-            }
-                selectSwordAttackSound = true;                           
-            //Attack closest enemy building if it exists
-            if (nearestEnemy != null && Vector3.Distance(nearestEnemy.transform.position, transform.position) < 1)
-            {
-                nearestEnemy.GetComponent<HealthBar>().AddHealth(-1 * Time.deltaTime);
-                fighting = true;				
-                FaceTowardsObject(nearestEnemy);
-            }
-            else //If closest enemy building doesn't exist, then do nothing
-            {
-                fighting = false;
-            }
-            
+                //If has no nearest enemy unit in range, check for enemy buildings that are in range
+                nearestEnemy = GetNearestEnemyBuilding();
+                var attackSoundSource = transform.GetComponent<AudioSource>();
+                //if (!FindObjectOfType<AudioManager>().isPlaying(attackSoundSource))
+                if (attackTimer <= 0)
+                {
+                    attackTimer = Random.Range(1, 3);
+                    //FindObjectOfType<AudioManager>().PlayOneShot(attackSoundSource, attackSoundWood);
+                }
+                else
+                {
+                    attackTimer -= Time.deltaTime;
+                }
+                selectSwordAttackSound = true;
+                //Attack closest enemy building if it exists
+                if (nearestEnemy != null && Vector3.Distance(nearestEnemy.transform.position, transform.position) < 1)
+                {
+                    nearestEnemy.GetComponent<HealthBar>().AddHealth(-100f * Time.deltaTime);
+                    fighting = true;
+                    FaceTowardsObject(nearestEnemy);
+                }
+            }*/
         }
     }
 
@@ -133,6 +184,9 @@ public class Attack : MonoBehaviour {
 
         //Find closest enemy building
         GameObject nearestEnemyBuilding = null;
+
+        //List<Transform> bucket = bucketGridController.getBucket(transform.position.x, transform.position.z );
+
         float closestDistance = float.MaxValue;
         for (int i = 0; i < enemiesBuildings.Count; i++)
         {
@@ -151,7 +205,6 @@ public class Attack : MonoBehaviour {
     //Returns the nearest enemy unit to this unit
     public GameObject GetNearestEnemyUnit()
     {
-
         GameObject[] VRUnits = new GameObject[0];
         GameObject[] PCUnits = new GameObject[0];
         GameObject[] AIUnits = new GameObject[0];

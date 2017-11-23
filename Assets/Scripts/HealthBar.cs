@@ -8,9 +8,17 @@ public class HealthBar : MonoBehaviour {
     public float health, maxHealth;
     Vector3 healthBarFrontScaleStart, healthBarFrontPosStart;
 
-    // Use this for initialization
-    void Start()
+    public bool underConstruction = false;
+    
+// Use this for initialization
+void Start()
     {
+
+        if (GetComponent<BuildingConstruction>())
+        {
+            underConstruction = true;
+        }
+
         Transform[] ts = gameObject.GetComponentsInChildren<Transform>();
 
         for (int i = 0; i < ts.Length; i++)
@@ -57,9 +65,22 @@ public class HealthBar : MonoBehaviour {
     public void AddHealth(float healthToAdd)
     {
         health += healthToAdd;
+        if (healthToAdd < 0 && underConstruction)
+        {
+            health += healthToAdd * 3;
+        }
         if (health <= 0)
         {
             Destroy(gameObject);
         }
+    }
+
+    public void setFrontBarColor(Color col)
+    {
+        healthBarFront.GetComponent<MeshRenderer>().material.color = col;
+    }
+    public void setBackBarColor(Color col)
+    {
+        healthBarBack.GetComponent<MeshRenderer>().material.color = col;
     }
 }

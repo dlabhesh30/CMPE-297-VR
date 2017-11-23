@@ -21,6 +21,8 @@ TagManager:
   - PolygonOptimizer
   - Tutorial
   - Resource Controller
+  - BucketGridController
+  - GameSettings
   layers:
   - Default
   - TransparentFX

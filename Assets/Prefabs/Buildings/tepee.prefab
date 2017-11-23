@@ -503,11 +503,12 @@ GameObject:
   m_Component:
   - component: {fileID: 4217642789297304}
   - component: {fileID: 23259209411791696}
-  - component: {fileID: 114064695689447498}
   - component: {fileID: 208511016010865380}
   - component: {fileID: 114587681473080912}
   - component: {fileID: 114629576812062140}
+  - component: {fileID: 114296080303222450}
   - component: {fileID: 82373735752815108}
+  - component: {fileID: 114073592300290574}
   m_Layer: 0
   m_Name: tepee
   m_TagString: Untagged
@@ -856,8 +857,8 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1727590877686344}
-  m_LocalRotation: {x: 0, y: -0.16883878, z: 0, w: -0.9856437}
-  m_LocalPosition: {x: -95.01697, y: -0.06440115, z: -105.68218}
+  m_LocalRotation: {x: 0, y: -0.09571531, z: 0, w: -0.9954088}
+  m_LocalPosition: {x: 112.18594, y: 0.06088072, z: 121.35713}
   m_LocalScale: {x: 1.25, y: 1.2499998, z: 1.2499998}
   m_Children:
   - {fileID: 4040391898142314}
@@ -2753,7 +2754,7 @@ AudioSource:
       tangentMode: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
-    m_RotationOrder: 4
+    m_RotationOrder: 0
   reverbZoneMixCustomCurve:
     serializedVersion: 2
     m_Curve:
@@ -2766,7 +2767,7 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 0
---- !u!114 &114064695689447498
+--- !u!114 &114073592300290574
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
@@ -2774,13 +2775,22 @@ MonoBehaviour:
   m_GameObject: {fileID: 1727590877686344}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c097b90334e532b48b94115dc22b9bbd, type: 3}
+  m_Script: {fileID: 11500000, guid: 9a3125c4e61ee3b4ca48a61f4c4ff6a1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  highPolyModelVR: {fileID: 0}
-  lowPolyModelVR: {fileID: 0}
-  highPolyModelPC: {fileID: 0}
-  lowPolyModelPC: {fileID: 0}
+  secondsToConstruct: 25
+--- !u!114 &114296080303222450
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1727590877686344}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 352b59389bcde87468e3f89d1c7c7542, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  unitPrefab: {fileID: 4612981448762026, guid: d1e275df086052746a1e4ab41c9279e9, type: 2}
 --- !u!114 &114587681473080912
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2794,6 +2804,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   health: 50
   maxHealth: 50
+  underConstruction: 0
 --- !u!114 &114629576812062140
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -6127,8 +6138,8 @@ NavMeshObstacle:
   m_GameObject: {fileID: 1727590877686344}
   m_Enabled: 1
   serializedVersion: 3
-  m_Shape: 1
-  m_Extents: {x: 0.5, y: 0.5, z: 0.5}
+  m_Shape: 0
+  m_Extents: {x: 0.4, y: 0.5, z: 0.4}
   m_MoveThreshold: 0.1
   m_Carve: 0
   m_CarveOnlyStationary: 1

@@ -227,7 +227,7 @@ public class VRUnitSelector : MonoBehaviour
                                     tutorial.NextTutorialStep();
                                 }
                             }*/
-                        Debug.Log("here");
+
                         ((GameObject)listSelected[i]).BroadcastMessage("Target", targetPoint + new Vector3((col) * .3f - width / 2 * .3f, 0, (row) * .3f - width / 2 * .3f));
                         //((GameObject)listSelected[i]).GetComponent<UnitController>().Target(targetPoint + new Vector3((col) * .3f - width / 2 * .3f, 0, (row) * .3f - width / 2 * .3f));
                             slpoint1 = new Vector3(0, 0, 0);
@@ -282,6 +282,7 @@ public class VRUnitSelector : MonoBehaviour
             //RaycastHit hitInfo;
             hasGroundTarget = Physics.Raycast(ray, out hitInfo);
             dist = hitInfo.distance;
+            
         }
         else // If we're just staying flat on the current Y axis
         {

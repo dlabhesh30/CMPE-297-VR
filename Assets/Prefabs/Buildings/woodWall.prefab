@@ -563,13 +563,12 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4486037880657000}
-  - component: {fileID: 114742589137457190}
   - component: {fileID: 23999288796963552}
   - component: {fileID: 208379858056264504}
-  - component: {fileID: 114917593604297538}
   - component: {fileID: 114186953298071042}
   - component: {fileID: 114219588248580852}
   - component: {fileID: 82583860887989470}
+  - component: {fileID: 114522797072423810}
   m_Layer: 0
   m_Name: woodWall
   m_TagString: Untagged
@@ -813,8 +812,8 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1968237010942276}
-  m_LocalRotation: {x: 0, y: -0.10490835, z: 0, w: -0.9944819}
-  m_LocalPosition: {x: -95.30559, y: -0.06440115, z: -106.43282}
+  m_LocalRotation: {x: 0, y: -0.029554706, z: 0, w: 0.99956316}
+  m_LocalPosition: {x: 89.59582, y: -0.06440163, z: 146.47293}
   m_LocalScale: {x: 2.3492076, y: 2.349208, z: 2.349208}
   m_Children:
   - {fileID: 4039501573181588}
@@ -2390,7 +2389,7 @@ AudioSource:
       tangentMode: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
-    m_RotationOrder: 4
+    m_RotationOrder: 0
   reverbZoneMixCustomCurve:
     serializedVersion: 2
     m_Curve:
@@ -2416,6 +2415,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   health: 100
   maxHealth: 100
+  underConstruction: 0
 --- !u!114 &114219588248580852
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2427,7 +2427,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e134a774a83fecb42aaa7a7dfd59f000, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &114742589137457190
+--- !u!114 &114522797072423810
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
@@ -2435,24 +2435,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 1968237010942276}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c097b90334e532b48b94115dc22b9bbd, type: 3}
+  m_Script: {fileID: 11500000, guid: 9a3125c4e61ee3b4ca48a61f4c4ff6a1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  highPolyModelVR: {fileID: 0}
-  lowPolyModelVR: {fileID: 0}
-  highPolyModelPC: {fileID: 0}
-  lowPolyModelPC: {fileID: 0}
---- !u!114 &114917593604297538
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1968237010942276}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ac976c18944d2aa4a87b3db57189871f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  secondsToConstruct: 25
 --- !u!198 &198305837170950254
 ParticleSystem:
   m_ObjectHideFlags: 1
