@@ -24,7 +24,7 @@ public class Attack : MonoBehaviour {
     public GameObject bucketGrid;
     BucketGridController bucketGridController;
     UnitController unitController;
-
+	AudioManager audioManager;
     // Use this for initialization
     void Start ()
     {
@@ -34,6 +34,7 @@ public class Attack : MonoBehaviour {
         bucketGridController = bucketGrid.GetComponent<BucketGridController>();
         nearestEnemy = null;
         enemyCheckTimer = Random.Range(0,10) / 10f;
+		audioManager = FindObjectOfType<AudioManager>();
         //Debug.Log("enemyCheckTimer start = " + enemyCheckTimer);
     }
 
@@ -87,24 +88,23 @@ public class Attack : MonoBehaviour {
                 {
                     //Subtract Health
                     nearestEnemy.GetComponent<HealthBar>().AddHealth(-100f * Time.deltaTime); //health -=1 * Time.deltaTime;
-                    //var attackSoundSource = transform.GetComponent<AudioSource>();
-                    /*
-                    if (!FindObjectOfType<AudioManager>().isPlaying(attackSoundSource))
+                    var attackSoundSource = transform.GetComponent<AudioSource>();
+                    
+					if (!audioManager.isPlaying(attackSoundSource))
                     {
                         if (selectSwordAttackSound)
                         {
-                            FindObjectOfType<AudioManager>().PlayOneShot(attackSoundSource, attackSoundSword);
-                            FindObjectOfType<AudioManager>().PlayOneShot(attackSoundSource, swordStabbed);
+							audioManager.PlayOneShot(attackSoundSource, attackSoundSword);
+							audioManager.PlayOneShot(attackSoundSource, swordStabbed);
                             selectSwordAttackSound = false;
                         }
                         else
                         {
-                            FindObjectOfType<AudioManager>().PlayOneShot(attackSoundSource, attackSoundWood);
-                            FindObjectOfType<AudioManager>().PlayOneShot(attackSoundSource, woodStabbed);
+							audioManager.PlayOneShot(attackSoundSource, attackSoundWood);
+							audioManager.PlayOneShot(attackSoundSource, woodStabbed);
                             selectSwordAttackSound = true;
                         }
-                    }
-                   */
+                    }                   
                     fighting = true;
                     //Face towards the enemy
                     FaceTowardsObject(nearestEnemy);

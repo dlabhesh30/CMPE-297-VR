@@ -7,19 +7,22 @@ public class BuildingsPlacer : MonoBehaviour
 {
     Vector3 startBuildPoint;
     public Transform buildingCostIndicator, floatingNumberPrefab;
-
-    BucketGridController bucketGrid;
+	public AudioClip constructionSoundClip;
+	public AudioClip errorSoundClip;
+	BucketGridController bucketGrid;
 
     bool called;
 
     GameObject resourceControllerGameObject;
     ResourceController resourceController;
+	AudioManager audioManager;
 
     void Start()
     {
         bucketGrid = GameObject.FindGameObjectWithTag("BucketGridController").GetComponent<BucketGridController>();
         resourceControllerGameObject = GameObject.FindGameObjectWithTag("Resource Controller");
         resourceController = resourceControllerGameObject.GetComponent<ResourceController>();
+		audioManager = FindObjectOfType<AudioManager>();
     }
 
     private void Update()
@@ -124,6 +127,8 @@ public class BuildingsPlacer : MonoBehaviour
                 if (!canAfford)
                 {
                     reasonCantBuild = "Not enough coins";
+					AudioSource buildingsAudioSource = gameObject.GetComponent<AudioSource> ();
+					audioManager.PlayOneShot(buildingsAudioSource,errorSoundClip);
                 }
 
                 //Debug.Log("INCREMENTS: " + increments);
@@ -157,6 +162,8 @@ public class BuildingsPlacer : MonoBehaviour
                         if (primaryReleased && !canAfford)
                         {
                             reasonCantBuild = "Not enough coins";
+							AudioSource buildingsAudioSource = gameObject.GetComponent<AudioSource> ();
+							audioManager.PlayOneShot(buildingsAudioSource,errorSoundClip);
                         }
                         GameObject.Destroy(newBuilding.gameObject, .02f);
                     }
@@ -165,6 +172,8 @@ public class BuildingsPlacer : MonoBehaviour
                         created = true;
                         newBuilding.gameObject.AddComponent<Bucketable>();
                         newBuilding.gameObject.AddComponent<PolygonOptimizer>();
+						AudioSource buildingsAudioSource = gameObject.GetComponent<AudioSource> ();
+						audioManager.PlayOneShot (buildingsAudioSource,constructionSoundClip);
                     }
                     xpos += Mathf.Cos(-Mathf.Deg2Rad * dir) * (dis / increments);
                     zpos += Mathf.Sin(-Mathf.Deg2Rad * dir) * (dis / increments);
@@ -192,6 +201,8 @@ public class BuildingsPlacer : MonoBehaviour
                 {
                     spaceOccupied = true;
                     reasonCantBuild = "Too close to building";
+					AudioSource buildingsAudioSource = gameObject.GetComponent<AudioSource> ();
+					audioManager.PlayOneShot(buildingsAudioSource,errorSoundClip);
                 }
 
                 Transform nearestUnit = bucketGrid.getNearestObject(new Vector2(point.x, point.z), 20, checkTagUnits);
@@ -207,12 +218,16 @@ public class BuildingsPlacer : MonoBehaviour
                     else
                     {
                         reasonCantBuild = "Too far away from your units";
+						AudioSource buildingsAudioSource = gameObject.GetComponent<AudioSource> ();
+						audioManager.PlayOneShot(buildingsAudioSource,errorSoundClip);
                     }
                 }
 
                 if (costCoins > teamCoins)
                 {
                     reasonCantBuild = "Not enough coins";
+					AudioSource buildingsAudioSource = gameObject.GetComponent<AudioSource> ();
+					audioManager.PlayOneShot(buildingsAudioSource,errorSoundClip);
                 }
 
                 if (costCoins <= teamCoins && inRangeOfUnit && !spaceOccupied)
@@ -225,6 +240,8 @@ public class BuildingsPlacer : MonoBehaviour
 
                     newBuilding.gameObject.AddComponent<Bucketable>();
                     newBuilding.gameObject.AddComponent<PolygonOptimizer>();
+					AudioSource buildingsAudioSource = gameObject.GetComponent<AudioSource> ();
+					audioManager.PlayOneShot(buildingsAudioSource,constructionSoundClip);
 
                     if (team == 1)
                         newBuilding.tag = "VR Player's Building";

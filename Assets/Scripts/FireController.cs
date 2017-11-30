@@ -13,8 +13,7 @@ public class FireController : MonoBehaviour {
 // Use this for initialization
 void Start () {
         
-        audioManager = FindObjectOfType<AudioManager>();
-        audioSource = transform.GetComponent<AudioSource>();
+        audioManager = FindObjectOfType<AudioManager>();        
 
         healthBar = gameObject.GetComponent<HealthBar>();
 
@@ -34,6 +33,7 @@ void Start () {
         
         if (healthBar.health < healthBar.maxHealth / 2 && healthBar.underConstruction == false)
         {
+			audioSource = transform.GetComponent<AudioSource>();
             var fireSound = audioSource;            
             fire.SetActive(true);
             if (!audioManager.isPlaying(fireSound))
