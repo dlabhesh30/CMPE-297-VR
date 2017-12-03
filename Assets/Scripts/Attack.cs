@@ -10,10 +10,15 @@ public class Attack : MonoBehaviour {
 
     public bool fighting = false;
     public AudioClip attackSoundWood;
-    public AudioClip attackSoundSword;
-    public AudioClip swordStabbed;
-    public AudioClip woodStabbed;
-    bool selectSwordAttackSound = true;
+    public AudioClip attackSoundSword1;
+	public AudioClip attackSoundSword2;
+	public AudioClip attackSoundSword3;
+    public AudioClip scream1;
+    public AudioClip scream2;
+	public AudioClip scream3;
+	public AudioClip scream4;
+    int selectAttackSound = 0;
+	bool selectScreamSound = true;
 
     float attackTimer;
 
@@ -89,22 +94,33 @@ public class Attack : MonoBehaviour {
                     //Subtract Health
                     nearestEnemy.GetComponent<HealthBar>().AddHealth(-100f * Time.deltaTime); //health -=1 * Time.deltaTime;
                     var attackSoundSource = transform.GetComponent<AudioSource>();
-                    
+					AudioClip attackSoundClip = null;
+					AudioClip screamSoundClip = null;
 					if (!audioManager.isPlaying(attackSoundSource))
                     {
-                        if (selectSwordAttackSound)
-                        {
-							audioManager.PlayOneShot(attackSoundSource, attackSoundSword);
-							audioManager.PlayOneShot(attackSoundSource, swordStabbed);
-                            selectSwordAttackSound = false;
-                        }
-                        else
-                        {
-							audioManager.PlayOneShot(attackSoundSource, attackSoundWood);
-							audioManager.PlayOneShot(attackSoundSource, woodStabbed);
-                            selectSwordAttackSound = true;
-                        }
-                    }                   
+						selectAttackSound = Random.Range (1,4);
+						switch (selectAttackSound) 
+						{
+						case 1: 
+							attackSoundClip = attackSoundSword1;
+							screamSoundClip = scream1;
+							break;
+						case 2: 
+							attackSoundClip = attackSoundSword2;
+							screamSoundClip = scream2;
+							break;
+						case 3: 
+							attackSoundClip = attackSoundWood;
+							screamSoundClip = scream3;
+							break;
+						case 4: 
+							attackSoundClip = attackSoundSword3;
+							screamSoundClip = scream4;
+							break;
+						}
+						audioManager.PlayOneShot(attackSoundSource, attackSoundClip);
+						audioManager.PlayOneShot (attackSoundSource, screamSoundClip);
+                     }                   
                     fighting = true;
                     //Face towards the enemy
                     FaceTowardsObject(nearestEnemy);

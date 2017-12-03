@@ -10,6 +10,11 @@ public class UnitController : MonoBehaviour {
 
     //Team Variables
     public int team;
+
+	//Audio Clips
+	public AudioClip marching1;
+	public AudioClip marching2;
+	public AudioClip marching3;
     
     //Target and Selection Indicator Variables
     GameObject selectCircle, debugText;
@@ -250,8 +255,22 @@ public class UnitController : MonoBehaviour {
                 Destroy(targetIndicator[0]);
                 targetIndicatorSet = false;				
             }        
-            var marchingSound = transform.GetComponent<AudioSource> ();
-            FindObjectOfType<AudioManager>().Play(marchingSound);
+            var marchingSource = transform.GetComponent<AudioSource> ();
+			AudioClip marchingAudioClip = null;
+			var randomSoundChoser = Random.Range (1,3);
+			switch (randomSoundChoser) 
+			{
+				case 1:
+					marchingAudioClip = marching1;
+					break;
+				case 2:
+					marchingAudioClip = marching2;
+					break;
+				case 3:
+					marchingAudioClip = marching3;
+					break;
+			}
+			FindObjectOfType<AudioManager>().PlayOneShot(marchingSource, marchingAudioClip);
             targetPoint = target + new Vector3(0,.05f,0);
             hasTarget = true;
             selected = false;
