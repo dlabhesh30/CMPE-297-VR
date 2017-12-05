@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class GameSettings : MonoBehaviour {
 
-    public float gameSpeed = 1;
+    public float gameSpeed = 5;
 
 
 	// Use this for initialization
