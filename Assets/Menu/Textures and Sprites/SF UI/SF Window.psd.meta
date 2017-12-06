@@ -1,5 +1,7 @@
 fileFormatVersion: 2
 guid: 6858abb4516aae344881bf286b3aac33
+timeCreated: 1512351631
+licenseType: Free
 TextureImporter:
   fileIDToRecycleName:
     21300000: SF Window
@@ -11,6 +13,8 @@ TextureImporter:
     linearTexture: 0
     fadeOut: 0
     borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
     mipMapFadeDistanceStart: 1
     mipMapFadeDistanceEnd: 3
   bumpmap:
@@ -20,16 +24,19 @@ TextureImporter:
     normalMapFilter: 0
   isReadable: 0
   grayScaleToAlpha: 0
-  generateCubemap: 0
+  generateCubemap: 6
   cubemapConvolution: 0
   seamlessCubemap: 0
   textureFormat: -3
   maxTextureSize: 4096
   textureSettings:
+    serializedVersion: 2
     filterMode: 2
     aniso: 16
     mipBias: -1
-    wrapMode: 1
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
@@ -120,8 +127,39 @@ TextureImporter:
       pivot: {x: 0.5, y: 0.5}
       border: {x: 170, y: 90, z: 170, w: 100}
       outline: []
+      physicsShape:
+      - - {x: 214.5, y: -98.5}
+        - {x: 215.5, y: -97.5}
+        - {x: 215.5, y: 86.5}
+        - {x: 196.5, y: 89.5}
+        - {x: 98.5, y: 89.5}
+        - {x: -87.5, y: 81.5}
+        - {x: -91.5, y: 89.5}
+        - {x: -212.5, y: 89.5}
+        - {x: -212.5, y: -99.5}
+        - {x: 14.5, y: -99.5}
+        - {x: 90.5, y: -91.5}
+        - {x: 92.5, y: -99.5}
+        - {x: 198.5, y: -99.5}
+      - - {x: -214.5, y: -84.5}
+        - {x: -164.5, y: -94.5}
+        - {x: 170.5, y: -101.5}
+        - {x: 209.5, y: -85.5}
+        - {x: 173.5, y: -76.5}
+      - - {x: -199.5, y: -72.5}
+        - {x: -197.5, y: 22.5}
+        - {x: -169.5, y: 67.5}
+        - {x: 162.5, y: 67.5}
+        - {x: 195.5, y: 22.5}
+        - {x: 203.5, y: -74.5}
+      - - {x: 92.5, y: 65.5}
+        - {x: 211.5, y: 75.5}
+        - {x: 100.5, y: 104.5}
+        - {x: -222.5, y: 88.5}
+        - {x: -208.5, y: 68.5}
       tessellationDetail: -1
     outline: []
+    physicsShape: []
   spritePackingTag: SF
   userData: 
   assetBundleName: 
