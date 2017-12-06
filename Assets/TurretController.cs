@@ -14,14 +14,21 @@ public class TurretController : MonoBehaviour {
     
     Transform nearestEnemy = null;
 
-    HealthBar healthBar;
+    public HealthBar healthBar;
 
     float range;
 
     GameSettings gameSettings;
 
+	bool archerIsActive;
+
+	GameObject archer;
+
     // Use this for initialization
     void Start () {
+		archer = gameObject.transform.GetChild (7).gameObject;
+		archer.gameObject.SetActive (false);
+		archerIsActive = false;
         gameSettings = GameObject.FindGameObjectWithTag("GameSettings").GetComponent<GameSettings>();
         shootTimer = 0;
         bucketGridController = GameObject.FindGameObjectWithTag("BucketGridController").transform.GetComponent<BucketGridController>();
@@ -32,6 +39,11 @@ public class TurretController : MonoBehaviour {
 	void Update () {
         if (!healthBar.underConstruction)
         {
+			if (!archerIsActive) {
+				archerIsActive = true;
+				archer.gameObject.SetActive (true);
+			}
+			
             if (shootTimer <= 0)
             {
                 if (tag == "VR Player's Building")
@@ -60,7 +72,8 @@ public class TurretController : MonoBehaviour {
                 if (nearestEnemy != null)
                 {
                     //Debug.Log("Enemies found");
-                    float xzdistance = Vector2.Distance(new Vector2(nearestEnemy.position.x, nearestEnemy.position.z), new Vector2(transform.position.x, transform.position.z));
+                    /*
+					float xzdistance = Vector2.Distance(new Vector2(nearestEnemy.position.x, nearestEnemy.position.z), new Vector2(transform.position.x, transform.position.z));
 
                     float shootDirectionY = Mathf.Atan2(nearestEnemy.position.x - transform.position.x, nearestEnemy.position.z - transform.position.z) * Mathf.Rad2Deg - 90;
                     float shootDirectionZ = Mathf.Atan2(nearestEnemy.position.y - (transform.position.y + 1), xzdistance) * Mathf.Rad2Deg + 15;
@@ -70,7 +83,7 @@ public class TurretController : MonoBehaviour {
                     Transform newProjectile = Instantiate(projectilePrefab, transform.position + new Vector3(0, 1, 0), Quaternion.Euler(0, shootDirectionY, 90 + shootDirectionZ));
                     newProjectile.GetComponent<Rigidbody>().velocity = Quaternion.Euler(0, shootDirectionY, shootDirectionZ) * new Vector3(projectileSpeed, 0, 0);
                     newProjectile.GetComponent<ArrowController>().team = team;
-                    Destroy(newProjectile.gameObject, 5);
+                    Destroy(newProjectile.gameObject, 5);*/
                 }
                 else
                 {
