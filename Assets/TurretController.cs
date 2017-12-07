@@ -44,8 +44,8 @@ public class TurretController : MonoBehaviour {
 				archer.gameObject.SetActive (true);
 			}
 			
-            if (shootTimer <= 0)
-            {
+            //if (shootTimer <= 0)
+            //{
                 if (tag == "VR Player's Building")
                     team = 1;
                 if (tag == "PC Player's Building")
@@ -89,12 +89,12 @@ public class TurretController : MonoBehaviour {
                 {
                     //Debug.Log("No enemies found");
                 }
-                shootTimer = 2;
-            }
-            else
-            {
-                shootTimer -= Time.deltaTime * gameSettings.gameSpeed;
-            }
+                //shootTimer = 2;
+            //}
+            //else
+            //{
+            //    shootTimer -= Time.deltaTime * gameSettings.gameSpeed;
+            //}
         }
 	}
 }

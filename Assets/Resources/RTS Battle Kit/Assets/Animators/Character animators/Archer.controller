@@ -5,7 +5,7 @@ AnimatorController:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
-  m_Name: Archer character
+  m_Name: Archer
   serializedVersion: 5
   m_AnimatorParameters:
   - m_Name: Attacking
@@ -89,12 +89,12 @@ AnimatorState:
   m_StateMachineBehaviours: []
   m_Position: {x: 50, y: 50, z: 0}
   m_IKOnFeet: 0
-  m_WriteDefaultValues: 1
+  m_WriteDefaultValues: 0
   m_Mirror: 0
   m_SpeedParameterActive: 0
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 0
-  m_Motion: {fileID: 7400000, guid: d15dc17843f304f439b0244b5794c8da, type: 3}
+  m_Motion: {fileID: 7400002, guid: f08b9fdc8f153b14495ee5e56514eec2, type: 3}
   m_Tag: 
   m_SpeedParameter: 
   m_MirrorParameter: 
@@ -106,19 +106,19 @@ AnimatorState:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_Name: Idle
-  m_Speed: 1
+  m_Speed: 0.005
   m_CycleOffset: 0
   m_Transitions:
   - {fileID: 1101066964293022240}
   m_StateMachineBehaviours: []
   m_Position: {x: 50, y: 50, z: 0}
   m_IKOnFeet: 0
-  m_WriteDefaultValues: 1
+  m_WriteDefaultValues: 0
   m_Mirror: 0
   m_SpeedParameterActive: 0
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 0
-  m_Motion: {fileID: 7400004, guid: d15dc17843f304f439b0244b5794c8da, type: 3}
+  m_Motion: {fileID: 7400000, guid: f08b9fdc8f153b14495ee5e56514eec2, type: 3}
   m_Tag: 
   m_SpeedParameter: 
   m_MirrorParameter: 
@@ -136,7 +136,7 @@ AnimatorStateMachine:
     m_Position: {x: 168, y: 420, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 1102065874837094660}
-    m_Position: {x: 168, y: 216, z: 0}
+    m_Position: {x: 168, y: 228, z: 0}
   m_ChildStateMachines: []
   m_AnyStateTransitions: []
   m_EntryTransitions: []

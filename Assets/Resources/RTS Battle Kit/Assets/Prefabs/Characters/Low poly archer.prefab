@@ -1169,7 +1169,7 @@ Animator:
   m_GameObject: {fileID: 1000013090372502}
   m_Enabled: 1
   m_Avatar: {fileID: 9000000, guid: d15dc17843f304f439b0244b5794c8da, type: 3}
-  m_Controller: {fileID: 9100000, guid: a58ed12bbea9b0f40ac9be70cd62dc4e, type: 2}
+  m_Controller: {fileID: 0}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 1
@@ -1188,12 +1188,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6cb12359c5c3e7946baeec1bcad6a8c0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  arrow: {fileID: 1000011467470154, guid: aa37ba82e9371354b9606e1e872812b1, type: 2}
   arrowSpawner: {fileID: 4000013905428084}
-  animationArrow: {fileID: 1000011425788594}
   damage: 10
   minAttackDistance: 2
   team: 0
+  projectilePrefab: {fileID: 0}
 --- !u!136 &136000012385900850
 CapsuleCollider:
   m_ObjectHideFlags: 1
